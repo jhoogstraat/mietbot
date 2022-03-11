@@ -1,0 +1,4 @@
+.env
+jobs.json
+dist/
+node_modules/

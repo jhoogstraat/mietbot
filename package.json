@@ -1,0 +1,27 @@
+{
+  "name": "miet_bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/main.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "commands": "npx tsc && node ./dist/commands.js",
+    "build": "npx tsc",
+    "start": "node dist/main.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0",
+    "url-exist": "^3.0.0",
+    "web-monitoring": "^3.2.2"
+  },
+  "devDependencies": {
+    "@discordjs/rest": "^0.3.0",
+    "discord-api-types": "^0.28.0",
+    "eslint": "^8.10.0",
+    "typescript": "^4.6.2"
+  }
+}
