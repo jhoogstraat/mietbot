@@ -30,7 +30,7 @@ const commands = [
 
 const rest = new REST({ version: '10' }).setToken(token);
 
-await rest.put(
+rest.put(
   Routes.applicationGuildCommands(clientId, guildId),
   { body: commands },
 );
