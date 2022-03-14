@@ -1,0 +1,9 @@
+.env
+.dockerignore
+.gitignore
+.git/
+docker*
+Dockerfile
+res/
+node_modules/
+dist/

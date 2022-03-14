@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  bot:
+    image: mietbot:latest
+    build: .
+    restart: always
+    volumes:
+      - ./jobs.json:/bot/jobs.json
+    environment:
+      TOKEN: ${TOKEN}
+      TZ: Europe/Berlin
