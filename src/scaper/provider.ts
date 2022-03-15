@@ -10,5 +10,5 @@ export abstract class Provider {
     this.url = url
   }
 
-  abstract run(page: Page): Promise<Inserat[]>
+  abstract run(page: Page, detailPage: Page): Promise<Inserat[]>
 }

@@ -33,7 +33,7 @@ export default class Scaper {
 
   static async init(queueName: string): Promise<Scaper> {
     const browser = await puppeteer.launch({ headless: false })
-    const queue = new Queue(queueName, { connection: { host: "localhost", port: 6379}, sharedConnection: true})
+    const queue = new Queue(queueName, { connection: { host: "localhost", port: 6379 }, sharedConnection: true })
 
     /* BDS */
     const bds = new BDSProvider()
@@ -44,19 +44,20 @@ export default class Scaper {
   async run() {
     for (const provider of this.providers) {
       const page = await this.browser.newPage()
+      const detailPage = await this.browser.newPage()
 
       try {
         console.log(`Running scraper for ${provider.name}`)
-        const inserate = await provider.run(page)
+        const inserate = await provider.run(page, detailPage)
         if (inserate.length > 0) {
           this.queue.add('bds', inserate)
         }
       } catch (error) {
+        this.queue.add('error', error)
+      } finally {
         await page.close()
-        throw error
+        await detailPage.close()
       }
-
-      await page.close()
     }
   }
 

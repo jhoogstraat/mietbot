@@ -1,4 +1,4 @@
-import { Client, Intents } from "discord.js"
+import { Client, Intents, MessageEmbed } from "discord.js"
 import { ToadScheduler, SimpleIntervalJob, AsyncTask } from "toad-scheduler"
 import { Worker } from "bullmq"
 import { Inserat } from "./provider_type"
@@ -34,8 +34,25 @@ async function main() {
     (err: Error) => { debugChannel.send(`[Scheduler] ${err}`) }
   )
 
-  const worker = new Worker<Inserat[], void>(queueName, async (job) => {
+  const discordWorker = new Worker<Inserat[], void>(queueName, async (job) => {
     console.log(job.data)
+    const embeds = job.data.map((inserat) => new MessageEmbed()
+      .setTitle(`${inserat.space.roomCount} Zimmer in ${inserat.address.district ?? inserat.address.zipCode}`)
+      .setURL(inserat.detailURL)
+      .setImage(inserat.previewImageURL ?? "")
+      .addField("Wohnfläche", `ca. ${inserat.space.area} m²`, true)
+      .addField("Netto-Kaltmiete", `${inserat.rentCold} €`, true)
+      .addField("Addresse", `[${inserat.address.street} ${inserat.address.number}](https://maps.google.com/?q=${encodeURIComponent(inserat.address.street + " " + inserat.address.number + " " + inserat.address.zipCode)})`)
+      .addField("Anbieter", `${inserat.provider}`)
+    )
+
+    await debugChannel.send({ embeds: embeds })
+  }, { connection: { connection: { host: "localhost", port: 6379 }, sharedConnection: true }, sharedConnection: true })
+
+  const errorWorker = new Worker<Inserat[], void>('error', async (job) => {
+    const errorDescription = `[Scraper] ${job.data}`
+    console.log(errorDescription)
+    await debugChannel.send(errorDescription)
   }, { connection: { connection: { host: "localhost", port: 6379 }, sharedConnection: true }, sharedConnection: true })
 
   const job = new SimpleIntervalJob({ seconds: 10 }, task)
@@ -52,12 +69,10 @@ async function main() {
   bot.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return
 
-    if (interaction.commandName === 'watch') {
+    if (interaction.commandName === 'subscribe') {
       interaction.reply(`Watching for changes`)
-    } else if (interaction.commandName === 'unwatch') {
+    } else if (interaction.commandName === 'unsubscribe') {
       interaction.reply(`Not watching anymore`)
-    } else if (interaction.commandName === 'list') {
-
     }
   })
 }
