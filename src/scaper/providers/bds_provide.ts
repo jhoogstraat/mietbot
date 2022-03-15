@@ -1,18 +1,16 @@
 import { Provider } from "../provider"
-import * as puppeteer from "puppeteer"
+import { Page, ElementHandle } from "puppeteer"
 import { Inserat } from "../../provider_type"
 
 export default class BDSProvider extends Provider {
-  constructor(browser: puppeteer.Browser) {
-    super('file:///home/jh/Downloads/Wohnungsangebote%20-%20BDS.html', browser)
+  constructor() {
+    super('bds', 'https://www.bds-hamburg.de/unser-angebot/wohnungsangebote/')
   }
 
-  async run(): Promise<Inserat[]> {
-    const page = await this.browser.newPage()
-
+  async run(page: Page): Promise<Inserat[]> {
     await page.goto(this.url)
 
-    const immolist: puppeteer.ElementHandle<HTMLDivElement> | null = await page.waitForSelector(".immobilielist")
+    const immolist: ElementHandle<HTMLDivElement> | null = await page.waitForSelector(".immobilielist")
 
     if (!immolist) {
       throw "[BDS] Something wrong. DIV with class 'immobilielist' does not exist"

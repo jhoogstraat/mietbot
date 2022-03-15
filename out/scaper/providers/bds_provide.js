@@ -2,17 +2,18 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const provider_1 = require("../provider");
 class BDSProvider extends provider_1.Provider {
-    constructor(page) {
-        super('file:///home/jh/Downloads/Wohnungsangebote%20-%20BDS.html', page);
+    constructor() {
+        super('bds', 'https://www.bds-hamburg.de/unser-angebot/wohnungsangebote/');
     }
-    async run() {
-        await this.page.goto(this.url);
-        const immolist = await this.page.waitForSelector(".immobilielist");
+    async run(page) {
+        await page.goto(this.url);
+        const immolist = await page.waitForSelector(".immobilielist");
         if (!immolist) {
             throw "[BDS] Something wrong. DIV with class 'immobilielist' does not exist";
         }
-        const inserate = await immolist.$$(".listitem");
-        for (let inseratData of inserate) {
+        const immolistItems = await immolist.$$(".listitem");
+        const inserate = [];
+        for (let inseratData of immolistItems) {
             const detailURL = new URL('https://www.bds-hamburg.de' + await inseratData.$(".block a").then((node) => node?.evaluate((s) => s.getAttribute('href'))));
             const hash = detailURL.searchParams.get('cHash');
             if (!hash) {
@@ -41,12 +42,15 @@ class BDSProvider extends provider_1.Provider {
                     roomCount: Number(roomCount.replace(",", ".")),
                     area: Number(area.replace(",", ".")),
                     rentCold: Number(rentCold.split(" ")[0].replace(",", ".")),
+                    detailURL: detailURL.toString()
                 };
+                inserate.push(inserat);
             }
             else {
                 throw `[BDS] Any of the required fields could not be retrieved! id: ${hash}`;
             }
         }
+        return inserate;
     }
 }
 exports.default = BDSProvider;

@@ -1,14 +1,14 @@
-import { Browser } from "puppeteer"
-import { Inserat } from "../provider_type"
+import { Page } from "puppeteer"
+import { Inserat, ProviderName } from "../provider_type"
 
 export abstract class Provider {
+  name: ProviderName
   url: string
-  browser: Browser
 
-  constructor(url: string, browser: Browser) {
+  constructor(name: ProviderName, url: string) {
+    this.name = name
     this.url = url
-    this.browser = browser
   }
 
-  abstract run(): Promise<Inserat[]>
+  abstract run(page: Page): Promise<Inserat[]>
 }

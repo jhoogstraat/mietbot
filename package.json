@@ -7,9 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
     "start-redis": "docker run -d --rm --name redis -p 6379:6379 redis",
-    "start-scaper": "node out/scaper/main.js",
-    "deploy-dc-commands": "npx tsc && node ./out/discord_bot/commands.js",
-    "start-dc-bot": "node out/discord_bot/main.js"
+    "deploy-dc-commands": "npx tsc && node ./out/commands.js",
+    "start": "node out/main.js"
   },
   "author": "",
   "license": "ISC",

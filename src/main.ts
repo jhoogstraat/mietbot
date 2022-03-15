@@ -1,6 +1,9 @@
 import { Client, Intents } from "discord.js"
 import { ToadScheduler, SimpleIntervalJob, AsyncTask } from "toad-scheduler"
+import { Worker } from "bullmq"
+import { Inserat } from "./provider_type"
 import Scraper from "./scaper/scaper"
+import 'dotenv/config'
 
 async function main() {
   /* Discord Bot */
@@ -9,27 +12,37 @@ async function main() {
 
   const bot = new Client({ intents: [Intents.FLAGS.GUILDS] })
   await bot.login(token)
+
   const debugChannel = await bot.channels.fetch(debugChannelId)
 
   if (debugChannel?.type !== "GUILD_TEXT") {
     throw "Debug channel not text based!"
   }
 
-  /* Scraping */
-  const scaper = await Scraper.init()
+  console.log(`[Bot] Logged in as ${bot.user!.tag}! Debug channel-id: ${debugChannel.id}`)
+
+  /* Scraper */
+  const queueName = process.env.QUEUE_NAME!
+  const scaper = await Scraper.init(queueName)
+  console.log("Scraper initialized")
+
+  /* Scheduler */
   const scheduler = new ToadScheduler()
   const task = new AsyncTask(
     'scape-websites',
-    scaper.run,
-    (err: Error) => { debugChannel.send(`[Scheduler]: ${err}`) }
+    () => scaper.run(),
+    (err: Error) => { debugChannel.send(`[Scheduler] ${err}`) }
   )
 
-  const job = new SimpleIntervalJob({ minutes: 5 }, task)
+  const worker = new Worker<Inserat[], void>(queueName, async (job) => {
+    console.log(job.data)
+  }, { connection: { connection: { host: "localhost", port: 6379 }, sharedConnection: true }, sharedConnection: true })
+
+  const job = new SimpleIntervalJob({ seconds: 10 }, task)
   scheduler.addSimpleIntervalJob(job)
 
-  bot.once('ready', () => {
-    console.log(`Logged in as ${bot.user!.tag}!`)
-  })
+  console.log("Scheduler initialized")
+
 
   bot.on('error', (err) => {
     console.error(err)

@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Provider = void 0;
 class Provider {
+    name;
     url;
-    page;
-    constructor(url, page) {
+    constructor(name, url) {
+        this.name = name;
         this.url = url;
-        this.page = page;
     }
 }
 exports.Provider = Provider;

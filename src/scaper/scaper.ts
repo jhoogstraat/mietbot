@@ -1,6 +1,6 @@
 import { Queue } from 'bullmq';
 import 'dotenv/config'
-import { launch, Browser } from 'puppeteer'
+import * as puppeteer from 'puppeteer'
 import { Provider } from './provider.js';
 import BDSProvider from './providers/bds_provide.js'
 
@@ -21,35 +21,47 @@ import BDSProvider from './providers/bds_provide.js'
 
 export default class Scaper {
 
-  private constructor(browser: Browser, queue: Queue, providers: Provider[]) {
+  private constructor(browser: puppeteer.Browser, queue: Queue, providers: Provider[]) {
     this.browser = browser
     this.queue = queue
     this.providers = providers
   }
 
-  browser: Browser
+  browser: puppeteer.Browser
   queue: Queue
   providers: Provider[]
 
-  static async init(): Promise<Scaper> {
-    const browser = await launch()
-
-    const queue = new Queue('scaping')
+  static async init(queueName: string): Promise<Scaper> {
+    const browser = await puppeteer.launch({ headless: false })
+    const queue = new Queue(queueName, { connection: { host: "localhost", port: 6379}, sharedConnection: true})
 
     /* BDS */
-    const bds = new BDSProvider(browser)
+    const bds = new BDSProvider()
 
     return new Scaper(browser, queue, [bds])
   }
 
-  async deinit() {
-    await this.browser.close();
-  }
-
   async run() {
     for (const provider of this.providers) {
-      await provider.run()
+      const page = await this.browser.newPage()
+
+      try {
+        console.log(`Running scraper for ${provider.name}`)
+        const inserate = await provider.run(page)
+        if (inserate.length > 0) {
+          this.queue.add('bds', inserate)
+        }
+      } catch (error) {
+        await page.close()
+        throw error
+      }
+
+      await page.close()
     }
+  }
+
+  deinit(): Promise<void> {
+    return this.browser.close()
   }
 }
 
