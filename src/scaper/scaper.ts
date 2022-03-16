@@ -3,6 +3,7 @@ import 'dotenv/config'
 import * as puppeteer from 'puppeteer'
 import { Provider } from './provider.js';
 import BDSProvider from './providers/bds_provide.js'
+import SAGAProvider from './providers/saga_provider.js';
 
 // Pull
 // https://www.hamburgerwohnen.de/wohnungsbestand/freie-wohnungen.html
@@ -32,13 +33,14 @@ export default class Scaper {
   providers: Provider[]
 
   static async init(queueName: string): Promise<Scaper> {
-    const browser = await puppeteer.launch({ headless: false })
+    const browser = await puppeteer.launch()
     const queue = new Queue(queueName, { connection: { host: "localhost", port: 6379 }, sharedConnection: true })
 
     /* BDS */
     const bds = new BDSProvider()
+    const saga = new SAGAProvider()
 
-    return new Scaper(browser, queue, [bds])
+    return new Scaper(browser, queue, [bds, saga])
   }
 
   async run() {
@@ -53,6 +55,7 @@ export default class Scaper {
           this.queue.add('bds', inserate)
         }
       } catch (error) {
+        console.log(error)
         this.queue.add('error', error)
       } finally {
         await page.close()

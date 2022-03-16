@@ -22,13 +22,7 @@ export default class BDSProvider extends Provider {
 
     for (let inseratData of immolistItems) {
       const detailURL = new URL('https://www.bds-hamburg.de' + await inseratData.$(".block a").then((node) => node?.evaluate((s) => s.getAttribute('href'))))
-      const aptNumber = [...detailURL.searchParams].find((el) => el[0].includes("objektnr"))?.[1]
-
-      if (!aptNumber) {
-        console.log(`[BDS] The AptNumber could not be found! url: ${detailURL}`)
-        continue
-      }
-
+      const aptNumber = [...detailURL.searchParams].find((el) => el[0].includes("objektnr"))![1]
       const previewURL = "https://www.bds-hamburg.de" + await inseratData.$eval(".image img", el => el.getAttribute("src"))
       const street = await inseratData?.$eval('.geo .strasse', el => el.innerHTML)
       const number = await inseratData?.$eval('.geo .hausnumber', el => el.innerHTML)
@@ -46,6 +40,8 @@ export default class BDSProvider extends Provider {
           roomCount: Number(roomCount.replace(",", ".")),
           area: Number(area.replace(",", ".")),
           balcony: null,
+          floor: -1,
+          terrace: null,
         },
         address: {
           street: street.replace(/,+$/, '').trim(),
@@ -54,7 +50,12 @@ export default class BDSProvider extends Provider {
           state: state.replace(/,+$/, '').trim(),
           district: district.replace(/,+$/, '').trim(),
         },
-        rentCold: Number(rentCold.split(" ")[0].replace(",", ".")),
+        costs: {
+          nettoCold: Number(rentCold.split(" ")[0].replace(",", ".")),
+          operating: -1,
+          heating: -1,
+          total: -1
+        },
         availableFrom: null,
         detailURL: detailURL.toString(),
         previewImageURL: previewURL

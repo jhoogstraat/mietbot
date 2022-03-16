@@ -5,13 +5,22 @@ export type Address = {
   number: string
   zipCode: string,
   state: string,
-  district: string | null
+  district: string | null | undefined
 }
 
 export type Space = {
   roomCount: number,
   area: number,
-  balcony: boolean | null
+  floor: number | null | undefined,
+  balcony: boolean | null,
+  terrace: boolean | null
+} 
+
+export type Costs = {
+  nettoCold: number,
+  operating: number,
+  heating: number,
+  total: number
 }
 
 export type Inserat = {
@@ -19,7 +28,7 @@ export type Inserat = {
   id: string,
   address: Address,
   space: Space,
-  rentCold: number,
+  costs: Costs,
   availableFrom: string | null,
   detailURL: string,
   previewImageURL: string | null,

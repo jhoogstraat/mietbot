@@ -3,8 +3,11 @@ import { Page, ElementHandle } from "puppeteer"
 import { Inserat } from "../../provider_type"
 
 export default class SAGAProvider extends Provider {
+  addressRegex: RegExp
+
   constructor() {
     super('saga', 'https://www.saga.hamburg/immobiliensuche')
+    this.addressRegex = /(?<street>.*) (?<number>.*)\n(?<zipCode>\d*) (?<state>\w*)\(?(?<district>\w*)?/
   }
 
   async run(page: Page, detailPage: Page): Promise<Inserat[]> {
@@ -18,56 +21,87 @@ export default class SAGAProvider extends Provider {
 
     const inserate: Inserat[] = []
     for (let item of immolistItems) {
-      const detailURL = new URL('https://www.saga.hamburg' + await item.$eval("a", el => el.getAttribute('href')))
-      const previewURL = "https://www.saga.hamburg" + await item.$eval("img", el => el.getAttribute("src"))
-      const aptNumber = detailURL.pathname.split("/").pop()!
+      const detailURL = 'https://www.saga.hamburg' + await item.$eval("a", el => el.getAttribute('href'))
 
-      await detailPage.goto(detailURL.toString())
+      let previewImageURL: string | null = null
+      try {
+        const previewImagePath = await item.$eval("img", el => el.getAttribute("src"))
+        previewImageURL = "https://www.saga.hamburg" + previewImagePath
+      } catch {
+        /* Don't care if preview was not found, as there might be none. Log it though */
+        console.log(`[SAGA] There was not preview image for Inserat: ${detailURL}`)
+      }
 
-      const address = (await detailPage.$eval<string>("p.ft-semi", (el) => (el as HTMLParagraphElement).innerText)).replace("\n", " ").split(" ")
+      await detailPage.goto(detailURL)
+
       const inseratPropList = await detailPage.$$eval(".dl-props dt, .dl-props dd", el => el.map(el => el.innerHTML))
-
-      if (!inseratPropList) {
-        throw "[SAGA] Something wrong. Element with class '.dl-props' not found"
-      }
-
-      const lol: { [key: string]: string } = {}
-      lol['test'] = 123
-      const test: { [key: string]: string } = inseratPropList.reduce((acc, v, i) => {
+      const inseratProperties = inseratPropList.reduce((acc, v, i) => {
         // Map even items as properties and odd items as values to prev property.
-        i % 2 === 0 ? acc[v] = null : acc[list[i - 1]] = v
-        return acc
-      }, {});
-
-
-      if (address.length == 4 && roomCount && area && rentCold) {
-        const inserat: Inserat = {
-          provider: 'bds',
-          id: aptNumber,
-          space: {
-            roomCount: Number(roomCount.replace(",", ".")),
-            area: Number(area.replace(",", ".")),
-            balcony: null,
-          },
-          address: {
-            street: address[0].trim(),
-            number: address[1].trim(),
-            zipCode: address[2].trim(),
-            state: address[3].trim(),
-            district: null
-          },
-          rentCold: Number(rentCold.split(" ")[0].replace(",", ".")),
-          availableFrom: null,
-          detailURL: detailURL.toString(),
-          previewImageURL: previewURL
+        if (i % 2 !== 0) {
+          acc[inseratPropList[i - 1]] = v
         }
+        return acc
+      }, {} as { [key: string]: string })
 
-        inserate.push(inserat)
-      } else {
-        throw `[BDS] Any of the required fields could not be retrieved!`
+      const terraceAndBalcony = await detailPage.$$eval(".dl-props dd.checked, .dl-props dd.crossed", el => el.map(el => el.className == 'checked'))
+
+      const aptNumber = inseratProperties["Objektnummer"]
+      const roomCount = inseratProperties["Zimmer"]
+      const area = inseratProperties["Wohnfläche ca."]
+      const floor = inseratProperties['Etage']
+      const costsCold = inseratProperties['Netto-Kalt-Miete']
+      const costsOperating = inseratProperties['Betriebskosten']
+      const costsHeating = inseratProperties['Heizkosten']
+      const costsTotal = inseratProperties['Gesamtmiete']
+
+      const addressText = await detailPage.$eval("p.ft-semi", (el) => (el as HTMLParagraphElement).innerText)
+      const address = addressText.match(this.addressRegex)!.groups!
+
+      const inserat: Inserat = {
+        provider: 'saga',
+        id: aptNumber,
+        space: {
+          roomCount: this.processRoomCount(roomCount),
+          area: Number(area.split(" ")[0]),
+          floor: Number(floor),
+          balcony: terraceAndBalcony[1],
+          terrace: terraceAndBalcony[0]
+        },
+        costs: {
+          nettoCold: Number(costsCold.split(" ")[0].replace(",", ".")),
+          operating: Number(costsOperating.split(" ")[0].replace(",", ".")),
+          heating: Number(costsHeating.split(" ")[0].replace(",", ".")),
+          total: Number(costsTotal.split(" ")[0].replace(",", "."))
+        },
+        address: {
+          street: address.street,
+          number: address.number,
+          zipCode: address.zipCode,
+          state: address.state,
+          district: address.district
+        },
+        availableFrom: null,
+        detailURL: detailURL.toString(),
+        previewImageURL: previewImageURL
       }
+
+      inserate.push(inserat)
     }
 
     return inserate
+  }
+
+  processRoomCount(formatted: string): number {
+    const splitted = formatted.split(" ")
+    if (splitted.length == 1) {
+      return Number(splitted)
+    } else if (splitted.length == 2) {
+      var number = Number(splitted[0])
+      var partial = splitted[1].split("/")
+      number += Number(partial[0]) / Number(partial[1])
+      return number
+    } else {
+      throw "Invalid room count formatting"
+    }
   }
 }
