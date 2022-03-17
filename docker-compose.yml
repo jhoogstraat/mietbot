@@ -1,5 +1,7 @@
 version: '3'
 
+volumes:
+  mongo_data:
 services:
   bot:
     image: mietbot:latest
@@ -7,6 +9,23 @@ services:
     restart: always
     volumes:
       - ./jobs.json:/bot/jobs.json
+    depends_on:
+      - redis
+      - mongodb
     environment:
       TOKEN: ${TOKEN}
       TZ: Europe/Berlin
+
+  redis:
+    image: redis:lastest
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:4.4
+    restart: unless-stopped
+    volumes:
+      - mongo_data/db:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASS}
+

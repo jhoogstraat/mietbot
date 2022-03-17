@@ -5,16 +5,16 @@ export type Address = {
   number: string
   zipCode: string,
   state: string,
-  district: string | null | undefined
+  district?: string | null
 }
 
 export type Space = {
   roomCount: number,
   area: number,
-  floor: number | null | undefined,
-  balcony: boolean | null,
-  terrace: boolean | null
-} 
+  floor?: number | null,
+  balcony?: boolean | null,
+  terrace?: boolean | null
+}
 
 export type Costs = {
   nettoCold: number,
@@ -23,13 +23,13 @@ export type Costs = {
   total: number
 }
 
-export type Inserat = {
+export type Appartment = {
   provider: ProviderName,
-  id: string,
+  appartmentId: string,
   address: Address,
   space: Space,
   costs: Costs,
-  availableFrom: string | null,
+  availableFrom?: string | null,
   detailURL: string,
-  previewImageURL: string | null,
+  previewImageURL?: string | null,
 }

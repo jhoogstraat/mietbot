@@ -6,25 +6,23 @@ const clientId = process.env.CLIENT_ID!
 const guildId = process.env.GUILD_ID!
 const token = process.env.TOKEN!
 
-const watch = new SlashCommandBuilder()
-  .setName('watch')
-  .setDescription('Watch a websites and notify when it changes')
-  .addStringOption(option => option.setName("url").setDescription('The webistes url').setRequired(true))
+const subscribe = new SlashCommandBuilder()
+  .setName('subscribe')
+  .setDescription('Get notifications when new listings are found in this channel')
 
-const unwatch = new SlashCommandBuilder()
-  .setName('unwatch')
-  .setDescription('Watch a websites and notify when it changes')
-  .addStringOption(option => option.setName("url").setDescription('The webistes url').setRequired(true))
+const unsubscribe = new SlashCommandBuilder()
+  .setName('unsubscribe')
+  .setDescription('Stop receiving updates from this bot')
 
 const list = new SlashCommandBuilder()
   .setName('list')
-  .setDescription('List currently watched websites')
+  .setDescription('List providers')
 
 
 const commands = [
-  watch,
-  unwatch,
-  list,
+  subscribe,
+  unsubscribe,
+  list
 ]
   .map(cmd => cmd.toJSON())
 

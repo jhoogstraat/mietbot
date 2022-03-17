@@ -1,8 +1,9 @@
 import { Queue } from 'bullmq';
 import 'dotenv/config'
 import * as puppeteer from 'puppeteer'
+import { Appartment } from '../appartment_type.js';
 import { Provider } from './provider.js';
-import BDSProvider from './providers/bds_provide.js'
+import BDSProvider from './providers/bds_provider.js'
 import SAGAProvider from './providers/saga_provider.js';
 
 // Pull
@@ -32,15 +33,15 @@ export default class Scaper {
   queue: Queue
   providers: Provider[]
 
-  static async init(queueName: string): Promise<Scaper> {
+  static async init(scrapeQueueName: string): Promise<Scaper> {
     const browser = await puppeteer.launch()
-    const queue = new Queue(queueName, { connection: { host: "localhost", port: 6379 }, sharedConnection: true })
+    const scrapeQueue = new Queue(scrapeQueueName, { connection: { host: "localhost", port: 6379 }, sharedConnection: true })
 
     /* BDS */
     const bds = new BDSProvider()
     const saga = new SAGAProvider()
 
-    return new Scaper(browser, queue, [bds, saga])
+    return new Scaper(browser, scrapeQueue, [bds, saga])
   }
 
   async run() {
@@ -49,10 +50,15 @@ export default class Scaper {
       const detailPage = await this.browser.newPage()
 
       try {
-        console.log(`Running scraper for ${provider.name}`)
-        const inserate = await provider.run(page, detailPage)
-        if (inserate.length > 0) {
-          this.queue.add('bds', inserate)
+        console.log(`[${provider.name}] Scraping...`)
+        const appartments = await provider.run(page, detailPage)
+        const newListings = provider.filterNew(appartments)
+
+        if (newListings.length > 0) {
+          console.log(`[${provider.name}] new listings: ${newListings}`)
+          this.queue.add(provider.name, newListings)
+        } else {
+          console.log(`[${provider.name}] no new listings`)
         }
       } catch (error) {
         console.log(error)

@@ -1,13 +1,13 @@
 import { Provider } from "../provider"
 import { Page, ElementHandle } from "puppeteer"
-import { Inserat } from "../../provider_type"
+import { Appartment } from "../../appartment_type"
 
 export default class BDSProvider extends Provider {
   constructor() {
     super('bds', 'https://www.bds-hamburg.de/unser-angebot/wohnungsangebote/')
   }
 
-  async run(page: Page, detailPage: Page): Promise<Inserat[]> {
+  async run(page: Page, detailPage: Page): Promise<Appartment[]> {
     await page.goto(this.url)
 
     const immolist: ElementHandle<HTMLDivElement> | null = await page.waitForSelector(".immobilielist")
@@ -18,24 +18,24 @@ export default class BDSProvider extends Provider {
 
     const immolistItems = await immolist.$$(".listitem")
 
-    const inserate: Inserat[] = []
+    const appartments: Appartment[] = []
 
-    for (let inseratData of immolistItems) {
-      const detailURL = new URL('https://www.bds-hamburg.de' + await inseratData.$(".block a").then((node) => node?.evaluate((s) => s.getAttribute('href'))))
+    for (let appartmentData of immolistItems) {
+      const detailURL = new URL('https://www.bds-hamburg.de' + await appartmentData.$(".block a").then((node) => node?.evaluate((s) => s.getAttribute('href'))))
       const aptNumber = [...detailURL.searchParams].find((el) => el[0].includes("objektnr"))![1]
-      const previewURL = "https://www.bds-hamburg.de" + await inseratData.$eval(".image img", el => el.getAttribute("src"))
-      const street = await inseratData?.$eval('.geo .strasse', el => el.innerHTML)
-      const number = await inseratData?.$eval('.geo .hausnumber', el => el.innerHTML)
-      const zipCode = await inseratData?.$eval('.geo .plz', el => el.innerHTML)
-      const state = await inseratData?.$eval('.geo .ort', el => el.innerHTML)
-      const district = await inseratData?.$eval('.geo .stadtteil', el => el.innerHTML)
-      const roomCount = await inseratData?.$eval('.flaechen .anzahl_zimmer .wert', el => el.innerHTML)
-      const area = await inseratData?.$eval('.flaechen .wohnflaeche .wert', el => el.innerHTML)
-      const rentCold = await inseratData?.$eval('.miete .warmmiete', el => el.innerHTML)
+      const previewURL = "https://www.bds-hamburg.de" + await appartmentData.$eval(".image img", el => el.getAttribute("src"))
+      const street = await appartmentData?.$eval('.geo .strasse', el => el.innerHTML)
+      const number = await appartmentData?.$eval('.geo .hausnumber', el => el.innerHTML)
+      const zipCode = await appartmentData?.$eval('.geo .plz', el => el.innerHTML)
+      const state = await appartmentData?.$eval('.geo .ort', el => el.innerHTML)
+      const district = await appartmentData?.$eval('.geo .stadtteil', el => el.innerHTML)
+      const roomCount = await appartmentData?.$eval('.flaechen .anzahl_zimmer .wert', el => el.innerHTML)
+      const area = await appartmentData?.$eval('.flaechen .wohnflaeche .wert', el => el.innerHTML)
+      const rentCold = await appartmentData?.$eval('.miete .warmmiete', el => el.innerHTML)
 
-      const inserat: Inserat = {
+      const appartment: Appartment = {
         provider: 'bds',
-        id: aptNumber,
+        appartmentId: aptNumber,
         space: {
           roomCount: Number(roomCount.replace(",", ".")),
           area: Number(area.replace(",", ".")),
@@ -61,9 +61,9 @@ export default class BDSProvider extends Provider {
         previewImageURL: previewURL
       }
 
-      inserate.push(inserat)
+      appartments.push(appartment)
     }
 
-    return inserate
+    return appartments
   }
 }
