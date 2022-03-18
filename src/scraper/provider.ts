@@ -1,4 +1,3 @@
-import { Page } from "puppeteer"
 import { Appartment, ProviderName } from "../appartment_type"
 
 export abstract class Provider {
@@ -12,13 +11,13 @@ export abstract class Provider {
     this.url = url
   }
 
-  abstract run(page: Page, detailPage: Page): Promise<Appartment[]>
+  abstract run(): Promise<Appartment[]>
 
   filterNew(appartments: Appartment[]): Appartment[] {
     if (!this.initialized) {
       this.updateCache(appartments)
       this.initialized = true
-      console.log(`[${this.name}] Initialized with listings ${Array.from(this.activeListings.keys())}`)
+      console.log(`[${this.name}] Initialized with listings ${Array.from(this.activeListings)}`)
       return []
     }
 

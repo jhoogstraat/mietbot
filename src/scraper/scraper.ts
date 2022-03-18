@@ -1,7 +1,6 @@
 import { Queue } from 'bullmq';
 import 'dotenv/config'
-import * as puppeteer from 'puppeteer'
-import { Appartment } from '../appartment_type.js';
+import puppeteer from 'puppeteer'
 import { Provider } from './provider.js';
 import BDSProvider from './providers/bds_provider.js'
 import SAGAProvider from './providers/saga_provider.js';
@@ -21,7 +20,7 @@ import SAGAProvider from './providers/saga_provider.js';
 // https://wv1902.de/wohnungsangebote/
 // https://www.vhw-hamburg.de/wohnen/aktuelle-angebote.html
 
-export default class Scaper {
+export default class Scraper {
 
   private constructor(browser: puppeteer.Browser, queue: Queue, providers: Provider[]) {
     this.browser = browser
@@ -33,39 +32,44 @@ export default class Scaper {
   queue: Queue
   providers: Provider[]
 
-  static async init(scrapeQueueName: string): Promise<Scaper> {
+  static async init(scrapeQueueName: string): Promise<Scraper> {
     const browser = await puppeteer.launch()
-    const scrapeQueue = new Queue(scrapeQueueName, { connection: { host: "localhost", port: 6379 }, sharedConnection: true })
+    const scrapeQueue = new Queue(scrapeQueueName, { connection: { host: "127.0.0.1", port: 6379 }, sharedConnection: true })
 
     /* BDS */
     const bds = new BDSProvider()
     const saga = new SAGAProvider()
 
-    return new Scaper(browser, scrapeQueue, [bds, saga])
+    return new Scraper(browser, scrapeQueue, [bds, saga])
   }
 
   async run() {
     for (const provider of this.providers) {
-      const page = await this.browser.newPage()
-      const detailPage = await this.browser.newPage()
+      let page: puppeteer.Page | null = null
 
       try {
         console.log(`[${provider.name}] Scraping...`)
-        const appartments = await provider.run(page, detailPage)
+        const appartments = await provider.run()
         const newListings = provider.filterNew(appartments)
 
         if (newListings.length > 0) {
           console.log(`[${provider.name}] new listings: ${newListings}`)
           this.queue.add(provider.name, newListings)
+          page = await this.browser.newPage()
+          for (let appartment of appartments) {
+            await page.goto(appartment.detailURL)
+            const height = await page.evaluate(() => document.documentElement.scrollHeight)
+            await page.pdf({ path: `listings/${appartment.provider}/${Buffer.from(appartment.appartmentId).toString('base64')}.pdf`, height: height + "px" })
+          }
         } else {
           console.log(`[${provider.name}] no new listings`)
         }
       } catch (error) {
         console.log(error)
         this.queue.add('error', error)
-      } finally {
-        await page.close()
-        await detailPage.close()
+      }
+      finally {
+        await page?.close()
       }
     }
   }
