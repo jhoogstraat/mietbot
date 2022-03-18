@@ -22,8 +22,7 @@
     "node-fetch": "^3.2.3",
     "node-html-parser": "^5.3.3",
     "node-schedule": "^2.1.0",
-    "puppeteer": "^13.5.1",
-    "toad-scheduler": "^1.6.0"
+    "puppeteer": "^13.5.1"
   },
   "devDependencies": {
     "@discordjs/builders": "^0.12.0",
