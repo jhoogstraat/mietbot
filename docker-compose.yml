@@ -2,19 +2,18 @@ version: '3'
 
 volumes:
   mongo_data:
+
 services:
   bot:
     image: mietbot:latest
     build: .
     restart: always
-    volumes:
-      - ./jobs.json:/bot/jobs.json
     depends_on:
       - redis
       - mongodb
     environment:
       TOKEN: ${TOKEN}
-      TZ: Europe/Berlin
+      TZ: ${TIMEZONE}
 
   redis:
     image: redis:lastest

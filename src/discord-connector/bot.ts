@@ -1,4 +1,4 @@
-import { Client, Intents, MessageOptions, MessagePayload, TextBasedChannel, TextChannel } from "discord.js"
+import { Client, Intents, MessageOptions, TextChannel } from "discord.js"
 import { Appartment } from "../appartment_type"
 import buildEmbed from "./appartment_embed_builder"
 

@@ -1,5 +1,4 @@
 import { Provider } from "../provider"
-import { Page, ElementHandle } from "puppeteer"
 import { Appartment } from "../../appartment_type"
 import { parse, HTMLElement } from 'node-html-parser'
 import fetch from 'node-fetch'
@@ -63,6 +62,7 @@ export default class SAGAProvider extends Provider {
           state: address.state,
           district: address.district,
         },
+        wbsRequired: null,
         availableFrom: properties['Verfügbar ab'],
         detailURL: listingURL.toString(),
         previewImageURL: previewImageURL

@@ -29,6 +29,7 @@ export type Appartment = {
   address: Address,
   space: Space,
   costs: Costs,
+  wbsRequired: boolean | null,
   availableFrom?: string | null,
   detailURL: string,
   previewImageURL?: string | null,

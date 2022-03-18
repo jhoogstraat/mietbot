@@ -38,7 +38,7 @@ export default class Scraper {
         const newListings = provider.filterNew(appartments)
 
         if (newListings.length > 0) {
-          console.log(`[${provider.name}] new listings: ${newListings}`)
+          console.log(`[${provider.name}] new listings: ${newListings.map(l => l.appartmentId)}`)
           this.queue.add(provider.name, newListings)
           page = await this.browser.newPage()
           for (let appartment of appartments) {

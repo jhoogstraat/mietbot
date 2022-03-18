@@ -1,7 +1,5 @@
-import { Queue } from "bullmq"
-import { AnyBulkWriteOperation, Db, MongoClient } from "mongodb"
-import { stringify } from "querystring"
-import { Appartment, ProviderName } from "../appartment_type"
+import { Db, MongoClient } from "mongodb"
+import { Appartment } from "../appartment_type"
 
 export default class Database {
     db: Db

@@ -1,5 +1,4 @@
 import { Provider } from "../provider"
-import { Page, ElementHandle } from "puppeteer"
 import { Appartment } from "../../appartment_type"
 import { parse, HTMLElement } from 'node-html-parser'
 import fetch from 'node-fetch'
@@ -35,18 +34,18 @@ export default class BDSProvider extends Provider {
       let previewImageURL: string | null = null
       const previewImagePath = listing.querySelector(".image img")?.getAttribute("src")
       if (previewImagePath) {
-        previewImageURL = "https://www.saga.hamburg" + previewImagePath
+        previewImageURL = "https://www.bds-hamburg.de" + previewImagePath
       } else { /* Don't care if preview was not found, as there might be none. Log it though */
         console.log(`[BDS] No preview image for appartment: ${listingURL}`)
       }
 
       const response = await fetch(listingURL.toString()).then(response => response.text())
-      const html = parse(response)
+      const html = parse(response).removeWhitespace()
 
       const properties = this.parseListingProperties(html)
-      const floor = properties["Etage"]?.split(" ")[0].replace(".", "")
+      const floor = properties["Etage"]?.match(/\d+/)?.at(0)
 
-      const appartment: Appartment = {
+      appartments.push({
         provider: 'bds',
         appartmentId: aptNumber,
         space: {
@@ -57,24 +56,23 @@ export default class BDSProvider extends Provider {
           terrace: properties["Balkon / Terrasse"] === 'Ja',
         },
         address: {
-          street: street.replace(/,+$/, '').trim(),
+          street: street.replace(/,$/, '').trim(),
           number: number.trim(),
           zipCode: zipCode.trim(),
-          state: state.replace(/,+$/, '').trim(),
-          district: district?.replace(/,+$/, '').trim(),
+          state: state.replace(/,$/, '').trim(),
+          district: district?.replace(/,$/, '').trim(),
         },
         costs: {
-          nettoCold: Number(properties['Netto-Kalt-Miete'].split(" ")[0].replace(",", ".")),
-          operating: Number(properties['Betriebskosten'].split(" ")[0].replace(",", ".")),
-          heating: Number(properties['Heiz­kosten'].split(" ")[0].replace(",", ".")),
-          total: Number(properties['Gesamt­miete'].split(" ")[0].replace(",", "."))
+          nettoCold: Number(properties['Netto-Kalt-Miete'].split(" ")[0].replace('.', '').replace(",", ".")),
+          operating: Number(properties['Betriebs­kosten'].split(" ")[0].replace('.', '').replace(",", ".")),
+          heating: Number(properties['Heiz­kosten'].split(" ")[0].replace('.', '').replace(",", ".")),
+          total: Number(properties['Gesamt­miete'].split(" ")[0].replace('.', '').replace(",", "."))
         },
+        wbsRequired: properties["Wohn­berechti­gungs­schein"] === "Ja",
         availableFrom: properties["Verfügbar ab"],
         detailURL: listingURL.toString(),
         previewImageURL: previewImageURL
-      }
-
-      appartments.push(appartment)
+      })
     }
 
     return appartments
@@ -82,6 +80,6 @@ export default class BDSProvider extends Provider {
 
   parseListingProperties(html: HTMLElement): { [key: string]: string } {
     const propertyList = html.querySelectorAll('tr')
-    return Object.fromEntries(propertyList.map(row => [row.childNodes[0].innerText, row.childNodes[1].innerText]))
+    return Object.fromEntries(propertyList.map(row => [row.childNodes[0].text.trim(), row.childNodes[1].text.trim()]))
   }
 }

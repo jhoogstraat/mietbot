@@ -31,29 +31,27 @@ async function main() {
   console.log("[Scheduler] initialized")
 
   /* BullMQ Queue Worker */
-  const databaseWorker = new Worker<Appartment[], void>(scraperQueueName, async (job) => {
-    try {
-      if (job.name != 'error')
-        await db.update(job.data)
-    } catch (error) {
-      console.error(error)
-      await bot.log("" + error)
+  const listingWorker = new Worker<Appartment[], void>(scraperQueueName, async (job) => {
+    if (job.name == 'error') {
+      console.error(job.data)
+      await bot.log("" + job.data)
+      return
     }
-  }, { connection: { host: "localhost", port: 6379 }, sharedConnection: true })
 
-  const discordWorker = new Worker<Appartment[], void>(scraperQueueName, async (job) => {
     try {
-      if (job.name == 'error') {
-        console.error(job.data)
-        await bot.log("" + job.data)
-      }
-      else {
-        await bot.post(job.data)
-      }
+      await db.update(job.data)
     } catch (error) {
       console.error(error)
       await bot.log("" + error)
     }
+
+    try {
+      await bot.post(job.data)
+    } catch (error) {
+      console.error(error)
+      await bot.log("" + error)
+    }
+
   }, { connection: { host: "localhost", port: 6379 }, sharedConnection: true })
 
 }
