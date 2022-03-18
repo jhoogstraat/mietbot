@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v10'
@@ -5,6 +6,10 @@ import { Routes } from 'discord-api-types/v10'
 const clientId = process.env.CLIENT_ID!
 const guildId = process.env.GUILD_ID!
 const token = process.env.TOKEN!
+
+if (!clientId || !guildId || !token) {
+  throw "Required environment variables not found"
+}
 
 const subscribe = new SlashCommandBuilder()
   .setName('subscribe')
@@ -26,13 +31,13 @@ const commands = [
 ]
   .map(cmd => cmd.toJSON())
 
-const rest = new REST({ version: '10' }).setToken(token);
+const rest = new REST({ version: '10' }).setToken(token)
 
-rest.put(
+await rest.put(
   Routes.applicationGuildCommands(clientId, guildId),
   { body: commands },
-);
+)
 
-console.log('Successfully reloaded application (/) commands.');
+console.log('Successfully reloaded application (/) commands.')
 
 

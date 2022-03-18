@@ -4,8 +4,8 @@ import { parse, HTMLElement } from 'node-html-parser'
 import fetch from 'node-fetch'
 
 export default class BDSProvider extends Provider {
-  constructor() {
-    super('bds', 'https://www.bds-hamburg.de/unser-angebot/wohnungsangebote/')
+  constructor(listings: Set<string>) {
+    super('bds', 'https://www.bds-hamburg.de/unser-angebot/wohnungsangebote/', listings)
   }
 
   async run(): Promise<Appartment[]> {
@@ -71,7 +71,8 @@ export default class BDSProvider extends Provider {
         wbsRequired: properties["Wohn­berechti­gungs­schein"] === "Ja",
         availableFrom: properties["Verfügbar ab"],
         detailURL: listingURL.toString(),
-        previewImageURL: previewImageURL
+        previewImageURL: previewImageURL,
+        timestamp: new Date()
       })
     }
 

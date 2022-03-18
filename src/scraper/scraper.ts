@@ -1,6 +1,7 @@
 import { Queue } from 'bullmq';
 import 'dotenv/config'
 import puppeteer from 'puppeteer'
+import { ProviderName } from '../appartment_type.js';
 import { Provider } from './provider.js';
 import BDSProvider from './providers/bds_provider.js'
 import SAGAProvider from './providers/saga_provider.js';
@@ -17,13 +18,12 @@ export default class Scraper {
   queue: Queue
   providers: Provider[]
 
-  static async init(scrapeQueueName: string): Promise<Scraper> {
+  static async init(scrapeQueueName: string, listings: { [key in ProviderName]: Set<string> }): Promise<Scraper> {
     const browser = await puppeteer.launch()
     const scrapeQueue = new Queue(scrapeQueueName, { connection: { host: "127.0.0.1", port: 6379 }, sharedConnection: true })
 
-    /* BDS */
-    const bds = new BDSProvider()
-    const saga = new SAGAProvider()
+    const bds = new BDSProvider(listings["bds"])
+    const saga = new SAGAProvider(listings["saga"])
 
     return new Scraper(browser, scrapeQueue, [bds, saga])
   }
@@ -39,7 +39,9 @@ export default class Scraper {
 
         if (newListings.length > 0) {
           console.log(`[${provider.name}] new listings: ${newListings.map(l => l.appartmentId)}`)
+
           this.queue.add(provider.name, newListings)
+
           page = await this.browser.newPage()
           for (let appartment of appartments) {
             await page.goto(appartment.detailURL)

@@ -9,7 +9,7 @@
     "build": "npx tsc",
     "start-redis": "docker run -d --rm --name redis -p 6379:6379 redis",
     "start-mongodb": "docker run -d --rm --name mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=mietbot -e MONGO_INITDB_ROOT_PASSWORD=mietbot mongo",
-    "deploy-dc-commands": "npx tsc && node ./out/commands.js",
+    "deploy-dc-commands": "npx tsc && node out/discord-connector/commands.js",
     "start": "node --experimental-specifier-resolution=node out/main.js"
   },
   "author": "",

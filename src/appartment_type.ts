@@ -33,4 +33,5 @@ export type Appartment = {
   availableFrom?: string | null,
   detailURL: string,
   previewImageURL?: string | null,
+  timestamp: Date
 }

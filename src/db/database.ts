@@ -1,5 +1,5 @@
 import { Db, MongoClient } from "mongodb"
-import { Appartment } from "../appartment_type"
+import { Appartment, ProviderName } from "../appartment_type"
 
 export default class Database {
     db: Db
@@ -33,5 +33,14 @@ export default class Database {
 
     getSubscriptions(): Promise<string[]> {
         return this.db.collection('channels').distinct('id')
+    }
+
+    async getListings(): Promise<{ [key in ProviderName]: Set<string> }> {
+        const providerAggregatedListings = await this.db.collection("listings").aggregate()
+            .group({ _id: "$provider", listings: { $push: "$appartmentId" } })
+            .map(doc => [doc._id as string, new Set(doc.listings)])
+            .toArray()
+
+        return Object.fromEntries(providerAggregatedListings)
     }
 }

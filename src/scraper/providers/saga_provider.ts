@@ -6,8 +6,8 @@ import fetch from 'node-fetch'
 export default class SAGAProvider extends Provider {
   addressRegex: RegExp
 
-  constructor() {
-    super('saga', 'https://www.saga.hamburg/immobiliensuche')
+  constructor(listings: Set<string>) {
+    super('saga', 'https://www.saga.hamburg/immobiliensuche', listings)
     this.addressRegex = /\s*(?<street>.*) (?<number>.*)\n\s*(?<zipCode>\d*)\s*(?<state>\w*)\(?(?<district>\w*)?\s*/
   }
 
@@ -65,7 +65,8 @@ export default class SAGAProvider extends Provider {
         wbsRequired: null,
         availableFrom: properties['Verfügbar ab'],
         detailURL: listingURL.toString(),
-        previewImageURL: previewImageURL
+        previewImageURL: previewImageURL,
+        timestamp: new Date(),
       })
     }
 
