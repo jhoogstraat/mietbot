@@ -24,7 +24,7 @@ export default class DiscordBot {
                     return interaction.reply("Dieser Channel ist kein Textchannel. Bitte versuche es erneut in einem Textchannel")
                 }
 
-                if (!this.subscriptions.has(interaction.channelId)) {
+                if (this.subscriptions.has(interaction.channelId)) {
                     return interaction.reply("Ich informiere bereits über neue Inserate in diesem Channel")
                 }
 
@@ -33,7 +33,7 @@ export default class DiscordBot {
 
             } else if (interaction.commandName === 'unsubscribe') {
                 if (!this.subscriptions.has(interaction.channelId)) {
-                    return interaction.reply("Dieser Channel hat bereits keine Benachrichtigungen erhalten")
+                    return interaction.reply("Dieser Channel wird nicht über neue Inserate benachrichtigt")
                 }
 
                 await this.unsubscribe(interaction.channelId)
@@ -95,7 +95,7 @@ export default class DiscordBot {
     }
 
     async subscribe(channel: TextChannel): Promise<void> {
-
+        this.subscriptions.set(channel.id, channel)
         this.queue.add('add', channel.id)
     }
 

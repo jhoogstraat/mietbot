@@ -5,11 +5,11 @@ export abstract class Provider {
   url: string
   activeListings: Set<string>
 
-  constructor(name: ProviderName, url: string, listings: Set<string>) {
+  constructor(name: ProviderName, url: string, listings: Set<string> = new Set()) {
     this.name = name
     this.url = url
     this.activeListings = listings
-    console.log(`[${name}] Initialized with listings ${Array.from(listings)}`)
+    console.log(`[${name}] Initialized with listings:`, Array.from(listings))
   }
 
   abstract run(): Promise<Appartment[]>

@@ -21,7 +21,6 @@ export default class Scraper {
   static async init(scrapeQueueName: string, listings: { [key in ProviderName]: Set<string> }): Promise<Scraper> {
     const browser = await puppeteer.launch()
     const scrapeQueue = new Queue(scrapeQueueName, { connection: { host: "127.0.0.1", port: 6379 }, sharedConnection: true })
-
     const bds = new BDSProvider(listings["bds"])
     const saga = new SAGAProvider(listings["saga"])
 
