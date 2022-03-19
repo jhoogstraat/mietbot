@@ -8,31 +8,30 @@ import SAGAProvider from './providers/saga_provider.js';
 
 export default class Scraper {
 
-  private constructor(browser: puppeteer.Browser, queue: Queue, providers: Provider[]) {
-    this.browser = browser
+  private constructor(queue: Queue, providers: Provider[]) {
     this.queue = queue
     this.providers = providers
   }
 
-  browser: puppeteer.Browser
   queue: Queue
   providers: Provider[]
 
   static async init(scrapeQueueName: string, listings: { [key in ProviderName]: Set<string> }): Promise<Scraper> {
-    const browser = await puppeteer.launch()
-    const scrapeQueue = new Queue(scrapeQueueName, { connection: { host: "127.0.0.1", port: 6379 }, sharedConnection: true })
+    const scrapeQueue = new Queue(scrapeQueueName, { connection: { host: process.env.REDIS_HOST!, port: 6379 }, sharedConnection: true })
+    
     const bds = new BDSProvider(listings["bds"])
     const saga = new SAGAProvider(listings["saga"])
 
-    return new Scraper(browser, scrapeQueue, [bds, saga])
+    return new Scraper(scrapeQueue, [bds, saga])
   }
 
   async run() {
     for (const provider of this.providers) {
-      let page: puppeteer.Page | null = null
+      let browser: puppeteer.Browser | null = null
 
       try {
         console.log(`[${provider.name}] Scraping...`)
+
         const appartments = await provider.run()
         const newListings = provider.filterNew(appartments)
 
@@ -41,8 +40,17 @@ export default class Scraper {
 
           this.queue.add(provider.name, newListings)
 
-          page = await this.browser.newPage()
-          for (let appartment of appartments) {
+          if (!browser) {
+            browser = await puppeteer.launch({
+              args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox'
+              ]
+            })
+          }
+          
+          const page = await browser.newPage()
+          for (let appartment of newListings) {
             await page.goto(appartment.detailURL)
             const height = await page.evaluate(() => document.documentElement.scrollHeight)
             await page.pdf({ path: `listings/${appartment.provider}/${Buffer.from(appartment.appartmentId).toString('base64')}.pdf`, height: height + "px" })
@@ -55,13 +63,9 @@ export default class Scraper {
         this.queue.add('error', error)
       }
       finally {
-        await page?.close()
+        await browser?.close()
       }
     }
-  }
-
-  deinit(): Promise<void> {
-    return this.browser.close()
   }
 }
 

@@ -47,7 +47,7 @@ async function main() {
       console.error(error)
       bot.log("" + error)
     }
-  }, { connection: { host: "localhost", port: 6379 }, sharedConnection: true })
+  }, { connection: { host: process.env.REDIS_HOST!, port: 6379 }, sharedConnection: true })
 
   const listingWorker = new Worker<Appartment[], void>(scraperQueueName, async (job) => {
     if (job.name == 'error') {
@@ -70,7 +70,7 @@ async function main() {
       await bot.log("" + error)
     }
 
-  }, { connection: { host: "localhost", port: 6379 }, sharedConnection: true })
+  }, { connection: { host: process.env.REDIS_HOST!, port: 6379 }, sharedConnection: true })
 
 }
 

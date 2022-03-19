@@ -11,7 +11,7 @@ export default class Database {
     static async init(): Promise<Database> {
         const user = process.env.MONGO_USER!
         const pass = process.env.MONGO_PASS!
-        const client = await MongoClient.connect(`mongodb://127.0.0.1:27017`, { auth: { username: user, password: pass }, authSource: "admin" })
+        const client = await MongoClient.connect(`mongodb://${process.env.MONGO_HOST!}:27017`, { auth: { username: user, password: pass }, authSource: "admin" })
         const db = client.db("mietbot")
 
         await db.collection('listings').createIndex(['provider', 'appartmentId'], { unique: true })

@@ -5,25 +5,35 @@ volumes:
 
 services:
   bot:
-    image: mietbot:latest
+    image: jhoogstraat/mietbot:latest
     build: .
-    restart: always
+    restart: unless-stopped
+    volumes:
+      - ./listings:/bot/listings
     depends_on:
       - redis
       - mongodb
     environment:
       TOKEN: ${TOKEN}
       TZ: ${TIMEZONE}
+      DEBUG_CHANNEL: ${DEBUG_CHANNEL}
+      SCRAPING_INTERVAL: ${SCRAPING_INTERVAL}
+      REDIS_HOST: ${REDIS_HOST}
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_USER: ${MONGO_PASS}
+      MONGO_PASS: ${MONGO_PASS}
 
   redis:
-    image: redis:lastest
+    image: redis:latest
+    container_name: ${REDIS_HOST}
     restart: unless-stopped
 
   mongodb:
     image: mongo:4.4
+    container_name: ${MONGO_HOST}
     restart: unless-stopped
     volumes:
-      - mongo_data/db:/data/db
+      - mongo_data:/data/db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASS}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}

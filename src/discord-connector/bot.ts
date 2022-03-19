@@ -56,7 +56,7 @@ export default class DiscordBot {
             throw "Debug channel not text based!"
         }
 
-        const queue = new Queue(queueName, { connection: { host: "127.0.0.1", port: 6379 }, sharedConnection: true })
+        const queue = new Queue(queueName, { connection: { host: process.env.REDIS_HOST!, port: 6379 }, sharedConnection: true })
 
         bot.on('error', (err) => {
             console.error(err)
