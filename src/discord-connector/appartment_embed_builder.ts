@@ -1,15 +1,22 @@
-import { MessageEmbed } from "discord.js";
-import { Appartment, Costs } from "../appartment_type";
+import { ColorResolvable, MessageEmbed } from "discord.js";
+import { Appartment, Costs, ProviderName, Space } from "../appartment_type";
 
 export default buildEmbed
+
+const providerColorMap: Map<ProviderName, ColorResolvable> = new Map([
+  ["bds", "#ed8b00"],
+  ["saga", "#55bed5"],
+  ["walddoerfer", "#005D43"]
+])
 
 function buildEmbed(appartment: Appartment): MessageEmbed {
   const embed = new MessageEmbed()
     .setTitle(`${appartment.space.roomCount} Zimmer in ${appartment.address.district ?? appartment.address.zipCode}`)
     .setURL(appartment.detailURL)
+    .setColor(providerColorMap.get(appartment.provider)!)
     .addField("Wohnfläche", `ca. ${appartment.space.area} m²`, true)
     .addField("Etage", appartment.space.floor?.toString() ?? "Keine Angabe", true)
-    .addField("Balkon / Terrasse", formatBoolean(appartment.space.balcony), true)
+    .addField("Balkon / Terrasse", formatBalconyAndTerrace(appartment.space), true)
     // .addField("Terrasse", formatBoolean(appartment.space.terrace), true)
     .addField("WBS", formatBoolean(appartment.wbsRequired), true)
     .addField("Netto-Kaltmiete", `${appartment.costs.nettoCold} €`, true)
@@ -35,6 +42,18 @@ function formatTotalCosts(costs: Costs): string {
     return `${costs.total} €`
   } else {
     return `${costs.total} € (zzgl. Heizkosten)`
+  }
+}
+
+function formatBalconyAndTerrace(space: Space): string {
+  if (space.balcony === true && space.terrace === true) {
+    return "Balkon oder Terrasse"
+  } else if (space.balcony) {
+    return "Balkon"
+  } else if (space.terrace) {
+    return "Terrasse"
+  } else {
+    return "Nein"
   }
 }
 

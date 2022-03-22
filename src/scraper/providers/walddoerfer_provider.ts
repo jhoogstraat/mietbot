@@ -11,7 +11,7 @@ export default class WalddoerferProvider extends Provider {
 
   async run(browser: puppeteer.Browser): Promise<Appartment[]> {
     const page = await browser.newPage()
-    await page.goto('https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2227215/HP/immo.jsp')
+    await page.goto(this.url)
 
     // Deny Cookie Banner
     await page.waitForSelector('.uc-btn-deny').then(button => button?.click())
@@ -64,7 +64,7 @@ export default class WalddoerferProvider extends Provider {
         },
         wbsRequired: await page.$eval('#labels\\.wohnberechtigungsschein', (node) => node.innerHTML === 'Ja').catch(() => null),
         availableFrom: await page.$eval('#labels\\.availableStart', (node) => node.innerHTML).catch(() => null),
-        detailURL: this.url,
+        detailURL: this.url + "?rng=" + Math.random(), // <- Make unique
         previewImageURL: await page.$eval('.imageBig', (node) => node.getAttribute('src')),
         timestamp: new Date()
       })

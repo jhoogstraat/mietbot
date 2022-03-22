@@ -31,7 +31,7 @@ export type Appartment = {
   costs: Costs,
   wbsRequired: boolean | null,
   availableFrom?: string | null,
-  detailURL: string,
+  detailURL: string, // Unique(!) url to listing
   previewImageURL?: string | null,
   timestamp: Date
 }
