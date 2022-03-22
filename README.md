@@ -20,12 +20,12 @@ This bot that watches listings of building cooperatives and notifies you when a 
 # Genossenschaften
 Links to active listings
 ## Hamburg
-  - [Baugenossenschaft Dennerstraße-Selbsthilfe eG](https://www.bds-hamburg.de/unser-angebot/wohnungsangebote/)
-  - [SAGA Unternehmensgruppe](https://www.saga.hamburg/immobiliensuche)
+  - [Baugenossenschaft Dennerstraße-Selbsthilfe eG](https://www.bds-hamburg.de/unser-angebot/wohnungsangebote/) ✅
+  - [SAGA Unternehmensgruppe](https://www.saga.hamburg/immobiliensuche) ✅
   - [Wohnungsbaugenossenschaft KAIFU-NORDLAND eG](https://kaifu.de/wohnen/hamburg)
   - [Hanseatische Baugenossenschaft Hamburg eG](https://www.hanseatische.de/de/wohnungsangebote)
   - [Altonaer Spar- und Bauverein eG](https://2222820.hpm.immosolve.eu/?startRoute=result-list&objectIdentifier=2#!/result-list-2%60)
-  - [Walddörfer Wohnungsbaugenossenschaft eG](https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2227215/HP/immo.jsp)
+  - [Walddörfer Wohnungsbaugenossenschaft eG](https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2227215/HP/immo.jsp) ✅
   - [Baugenossenschaft der Buchdrucker eG](https://buchdrucker.immomio.de/)
   - [Baugenossenschaft dhu eG](https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2223228/HP/immo.jsp)
   - [HANSA Baugenossenschaft eG](https://hansa-baugenossenschaft.de/wohnen/unsere-wohnungen)
