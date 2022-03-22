@@ -2,6 +2,8 @@ import { Provider } from "../provider"
 import { Appartment } from "../../appartment_type"
 import { parse, HTMLElement } from 'node-html-parser'
 import fetch from 'node-fetch'
+import puppeteer from 'puppeteer'
+import { formatRoomCount } from "../formatter"
 
 export default class SAGAProvider extends Provider {
   addressRegex: RegExp
@@ -11,7 +13,7 @@ export default class SAGAProvider extends Provider {
     this.addressRegex = /\s*(?<street>.*) (?<number>.*)\n\s*(?<zipCode>\d*)\s*(?<state>\w*)\(?(?<district>\w*)?\s*/
   }
 
-  async run(): Promise<Appartment[]> {
+  async run(browser: puppeteer.Browser): Promise<Appartment[]> {
     const response = await fetch(this.url).then(response => response.text())
     const html = parse(response)
 
@@ -43,7 +45,7 @@ export default class SAGAProvider extends Provider {
         provider: 'saga',
         appartmentId: properties["Objektnummer"],
         space: {
-          roomCount: this.processRoomCount(properties["Zimmer"] as string),
+          roomCount: formatRoomCount(properties["Zimmer"] as string),
           area: Number(properties["Wohnfläche ca."].split(" ")[0]),
           floor: properties['Etage'] === undefined ? undefined : Number(properties['Etage']),
           balcony: properties['Balkon'] === 'true',
@@ -92,19 +94,5 @@ export default class SAGAProvider extends Provider {
     //   const values = Array.from(node.querySelectorAll('dd'), column => column.innerText)
     //   return keys.reduce<{ [key: string]: string }>((acc, key, i) => (acc[key] = values[i], acc), {})
     // })
-  }
-
-  processRoomCount(text: string): number {
-    const splitted = text.split(" ")
-    if (splitted.length == 1) {
-      return Number(splitted)
-    } else if (splitted.length == 2) {
-      var number = Number(splitted[0])
-      var partial = splitted[1].split("/")
-      number += Number(partial[0]) / Number(partial[1])
-      return number
-    } else {
-      throw "[SAGA] Invalid room count formatting"
-    }
   }
 }

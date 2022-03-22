@@ -5,6 +5,7 @@ import { ProviderName } from '../appartment_type.js';
 import { Provider } from './provider.js';
 import BDSProvider from './providers/bds_provider.js'
 import SAGAProvider from './providers/saga_provider.js';
+import WalddoerferProvider from './providers/walddoerfer_provider.js';
 
 export default class Scraper {
 
@@ -21,40 +22,39 @@ export default class Scraper {
     
     const bds = new BDSProvider(listings["bds"])
     const saga = new SAGAProvider(listings["saga"])
+    const walddoerfer = new WalddoerferProvider(listings["walddoerfer"])
 
-    return new Scraper(scrapeQueue, [bds, saga])
+    return new Scraper(scrapeQueue, [bds, saga, walddoerfer])
+  }
+
+  async launchBrowser(): Promise<puppeteer.Browser> {
+    return puppeteer.launch({
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox'
+      ]
+    })
   }
 
   async run() {
-    for (const provider of this.providers) {
-      let browser: puppeteer.Browser | null = null
+    const browser = await this.launchBrowser()
 
+    for (const provider of this.providers) {
       try {
         console.log(`[${provider.name}] Scraping...`)
 
-        const appartments = await provider.run()
+        const appartments = await provider.run(browser)
         const newListings = provider.filterNew(appartments)
 
         if (newListings.length > 0) {
           console.log(`[${provider.name}] new listings: ${newListings.map(l => l.appartmentId)}`)
-
           this.queue.add(provider.name, newListings)
 
-          if (!browser) {
-            browser = await puppeteer.launch({
-              args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox'
-              ]
-            })
-          }
-          
-          const page = await browser.newPage()
-          for (let appartment of newListings) {
-            await page.goto(appartment.detailURL)
-            const height = await page.evaluate(() => document.documentElement.scrollHeight)
-            await page.pdf({ path: `listings/${appartment.provider}/${Buffer.from(appartment.appartmentId).toString('base64')}.pdf`, height: height + "px" })
-          }
+          // for (let appartment of newListings) {
+          //   await page.goto(appartment.detailURL)
+          //   const height = await page.evaluate(() => document.documentElement.scrollHeight)
+          //   await page.pdf({ path: `listings/${appartment.provider}/${Buffer.from(appartment.appartmentId).toString('base64')}.pdf`, height: height + "px" })
+          // }
         } else {
           console.log(`[${provider.name}] no new listings`)
         }
@@ -62,10 +62,9 @@ export default class Scraper {
         console.log(error)
         this.queue.add('error', error)
       }
-      finally {
-        await browser?.close()
-      }
     }
+
+    await browser.close()
   }
 }
 

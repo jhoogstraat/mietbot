@@ -1,4 +1,4 @@
-export type ProviderName = 'bds' | 'saga'
+export type ProviderName = 'bds' | 'saga' | 'walddoerfer'
 
 export type Address = {
   street: string,
@@ -19,7 +19,7 @@ export type Space = {
 export type Costs = {
   nettoCold: number,
   operating: number,
-  heating: number,
+  heating: number | null,
   total: number
 }
 

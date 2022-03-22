@@ -1,5 +1,5 @@
 import { MessageEmbed } from "discord.js";
-import { Appartment } from "../appartment_type";
+import { Appartment, Costs } from "../appartment_type";
 
 export default buildEmbed
 
@@ -13,7 +13,7 @@ function buildEmbed(appartment: Appartment): MessageEmbed {
     // .addField("Terrasse", formatBoolean(appartment.space.terrace), true)
     .addField("WBS", formatBoolean(appartment.wbsRequired), true)
     .addField("Netto-Kaltmiete", `${appartment.costs.nettoCold} €`, true)
-    .addField("Gesamtmiete", `${appartment.costs.total} €`, true)
+    .addField("Gesamtmiete", formatTotalCosts(appartment.costs), true)
     .addField("Addresse", `[${appartment.address.street} ${appartment.address.number}](https://maps.google.com/?q=${encodeURIComponent(appartment.address.street + " " + appartment.address.number + " " + appartment.address.zipCode)})`)
 
   if (appartment.previewImageURL) {
@@ -27,6 +27,15 @@ function buildEmbed(appartment: Appartment): MessageEmbed {
   embed.addField("Anbieter", appartment.provider)
 
   return embed
+}
+
+// Heating costs might be null, thus total costs do not include them aswell
+function formatTotalCosts(costs: Costs): string {
+  if (costs.heating) {
+    return `${costs.total} €`
+  } else {
+    return `${costs.total} € (zzgl. Heizkosten)`
+  }
 }
 
 function formatBoolean(bool?: boolean | null): string {

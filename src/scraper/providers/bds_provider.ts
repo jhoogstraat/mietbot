@@ -2,13 +2,14 @@ import { Provider } from "../provider"
 import { Appartment } from "../../appartment_type"
 import { parse, HTMLElement } from 'node-html-parser'
 import fetch from 'node-fetch'
+import puppeteer from 'puppeteer'
 
 export default class BDSProvider extends Provider {
   constructor(listings: Set<string>) {
     super('bds', 'https://www.bds-hamburg.de/unser-angebot/wohnungsangebote/', listings)
   }
 
-  async run(): Promise<Appartment[]> {
+  async run(browser: puppeteer.Browser): Promise<Appartment[]> {
     const response = await fetch(this.url).then(response => response.text())
     const html = parse(response)
 

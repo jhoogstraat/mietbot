@@ -1,4 +1,5 @@
 import { Appartment, ProviderName } from "../appartment_type"
+import { Browser } from "puppeteer"
 
 export abstract class Provider {
   name: ProviderName
@@ -12,7 +13,7 @@ export abstract class Provider {
     console.log(`[${name}] Initialized with listings:`, Array.from(listings))
   }
 
-  abstract run(): Promise<Appartment[]>
+  abstract run(browser: Browser): Promise<Appartment[]>
 
   filterNew(appartments: Appartment[]): Appartment[] {
     const newListings = appartments.filter(apt => !this.activeListings.has(apt.appartmentId))
