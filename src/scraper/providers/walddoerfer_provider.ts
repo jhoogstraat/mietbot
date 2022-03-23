@@ -1,5 +1,5 @@
 import { Provider } from "../provider"
-import { Appartment } from "../../appartment_type"
+import { Listing } from "../../listing"
 import puppeteer from 'puppeteer'
 import * as Formatter from '../formatter'
 
@@ -9,7 +9,7 @@ export default class WalddoerferProvider extends Provider {
     super('walddoerfer', 'https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2227215/HP/immo.jsp', listings)
   }
 
-  async run(browser: puppeteer.Browser): Promise<Appartment[]> {
+  async run(browser: puppeteer.Browser): Promise<Listing[]> {
     const page = await browser.newPage()
     await page.goto(this.url)
 
@@ -25,7 +25,7 @@ export default class WalddoerferProvider extends Provider {
       return []
     }
 
-    const appartments: Appartment[] = []
+    const listings: Listing[] = []
     for (var i = 0; i < listingsCount; i++) {
       const listing = await page.$(`#immoObjectTemplate\\[${i}\\]`)
       await listing!.hover()
@@ -39,9 +39,10 @@ export default class WalddoerferProvider extends Provider {
         throw "[WALDDOERFER] Something wrong. Id could not be extracted"
       }
 
-      appartments.push({
+      listings.push({
         provider: 'walddoerfer',
-        appartmentId: id,
+        id: id,
+        category: 'apartment',
         address: {
           street: await page.$eval('#address\\.labels\\.strasse', node => node.innerHTML),
           number: await page.$eval('#address\\.labels\\.hausnummer', node => node.innerHTML),
@@ -72,7 +73,7 @@ export default class WalddoerferProvider extends Provider {
       await page.$('.container-close').then(button => button?.click())
     }
 
-    return appartments
+    return listings
   }
 
 }

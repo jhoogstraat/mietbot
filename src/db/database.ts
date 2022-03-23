@@ -1,5 +1,5 @@
 import { Db, MongoClient } from "mongodb"
-import { Appartment, ProviderName } from "../appartment_type"
+import { Listing, ProviderName } from "../listing"
 
 export default class Database {
     db: Db
@@ -14,13 +14,13 @@ export default class Database {
         const client = await MongoClient.connect(`mongodb://${process.env.MONGO_HOST!}:27017`, { auth: { username: user, password: pass }, authSource: "admin" })
         const db = client.db("mietbot")
 
-        await db.collection('listings').createIndex(['provider', 'appartmentId'], { unique: true })
+        await db.collection('listings').createIndex(['provider', 'id'], { unique: true })
 
         return new Database(db)
     }
 
-    async update(appartments: Appartment[]): Promise<void> {
-        await this.db.collection('listings').insertMany(appartments)
+    async update(listings: Listing[]): Promise<void> {
+        await this.db.collection('listings').insertMany(listings)
     }
 
     async addSubscription(id: string): Promise<void> {
@@ -37,7 +37,7 @@ export default class Database {
 
     async getListings(): Promise<{ [key in ProviderName]: Set<string> }> {
         const providerAggregatedListings = await this.db.collection("listings").aggregate()
-            .group({ _id: "$provider", listings: { $push: "$appartmentId" } })
+            .group({ _id: "$provider", listings: { $push: "$id" } })
             .map(doc => [doc._id as string, new Set(doc.listings)])
             .toArray()
 

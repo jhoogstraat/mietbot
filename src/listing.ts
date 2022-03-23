@@ -1,19 +1,21 @@
-export type ProviderName = 'bds' | 'saga' | 'walddoerfer'
+export type ProviderName = 'bds' | 'saga' | 'walddoerfer' | 'kaifu'
+
+export type Category = 'parking' | 'apartment'
 
 export type Address = {
   street: string,
-  number: string
+  number: string | null,
   zipCode: string,
   state: string,
-  district?: string | null
+  district: string | null
 }
 
 export type Space = {
   roomCount: number,
   area: number,
-  floor?: number | null,
-  balcony?: boolean | null,
-  terrace?: boolean | null
+  floor: number | null,
+  balcony: boolean | null,
+  terrace: boolean | null
 }
 
 export type Costs = {
@@ -23,15 +25,16 @@ export type Costs = {
   total: number
 }
 
-export type Appartment = {
+export type Listing = {
   provider: ProviderName,
-  appartmentId: string,
+  id: string,
+  category: Category,
   address: Address,
   space: Space,
   costs: Costs,
   wbsRequired: boolean | null,
-  availableFrom?: string | null,
+  availableFrom: string | null,
   detailURL: string, // Unique(!) url to listing
-  previewImageURL?: string | null,
+  previewImageURL: string | null,
   timestamp: Date
 }

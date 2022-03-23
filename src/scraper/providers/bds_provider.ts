@@ -1,26 +1,27 @@
 import { Provider } from "../provider"
-import { Appartment } from "../../appartment_type"
+import { Listing } from "../../listing"
 import { parse, HTMLElement } from 'node-html-parser'
 import fetch from 'node-fetch'
 import puppeteer from 'puppeteer'
+import * as Formatter from '../formatter'
 
 export default class BDSProvider extends Provider {
   constructor(listings: Set<string>) {
     super('bds', 'https://www.bds-hamburg.de/unser-angebot/wohnungsangebote/', listings)
   }
 
-  async run(browser: puppeteer.Browser): Promise<Appartment[]> {
+  async run(browser: puppeteer.Browser): Promise<Listing[]> {
     const response = await fetch(this.url).then(response => response.text())
     const html = parse(response)
 
-    const listings = html.querySelector(".immobilielist")
+    const htmlListings = html.querySelector(".immobilielist")
 
-    if (!listings) {
+    if (!htmlListings) {
       throw "[BDS] DIV with class 'immobilielist' does not exist"
     }
 
-    const appartments: Appartment[] = []
-    for (let listing of listings.querySelectorAll('.listitem')) {
+    const listings: Listing[] = []
+    for (let listing of htmlListings.querySelectorAll('.listitem')) {
       const listingURL = new URL('https://www.bds-hamburg.de' + await listing.querySelector(".block a")!.getAttribute('href')!)
 
       const aptNumber = [...listingURL.searchParams].find((el) => el[0].includes("objektnr"))![1]
@@ -37,7 +38,7 @@ export default class BDSProvider extends Provider {
       if (previewImagePath) {
         previewImageURL = "https://www.bds-hamburg.de" + previewImagePath
       } else { /* Don't care if preview was not found, as there might be none. Log it though */
-        console.log(`[BDS] No preview image for appartment: ${listingURL}`)
+        console.log(`[BDS] No preview image for listing: ${listingURL}`)
       }
 
       const response = await fetch(listingURL.toString()).then(response => response.text())
@@ -46,12 +47,13 @@ export default class BDSProvider extends Provider {
       const properties = this.parseListingProperties(html)
       const floor = properties["Etage"]?.match(/\d+/)?.at(0)
 
-      appartments.push({
+      listings.push({
         provider: 'bds',
-        appartmentId: aptNumber,
+        id: aptNumber,
+        category: 'apartment',
         space: {
-          roomCount: Number(roomCount.replace(",", ".")),
-          area: Number(area.replace(",", ".")),
+          roomCount: Formatter.formatNumber(roomCount),
+          area: Formatter.formatNumber(area),
           floor: floor ? Number(floor) : null,
           balcony: properties["Balkon / Terrasse"] === 'Ja',
           terrace: properties["Balkon / Terrasse"] === 'Ja',
@@ -61,13 +63,13 @@ export default class BDSProvider extends Provider {
           number: number.trim(),
           zipCode: zipCode.trim(),
           state: state.replace(/,$/, '').trim(),
-          district: district?.replace(/,$/, '').trim(),
+          district: district?.replace(/,$/, '').trim() ?? null,
         },
         costs: {
-          nettoCold: Number(properties['Netto-Kalt-Miete'].split(" ")[0].replace('.', '').replace(",", ".")),
-          operating: Number(properties['Betriebs­kosten'].split(" ")[0].replace('.', '').replace(",", ".")),
-          heating: Number(properties['Heiz­kosten'].split(" ")[0].replace('.', '').replace(",", ".")),
-          total: Number(properties['Gesamt­miete'].split(" ")[0].replace('.', '').replace(",", "."))
+          nettoCold: Formatter.formatNumber(properties['Netto-Kalt-Miete']),
+          operating: Formatter.formatNumber(properties['Betriebs­kosten']),
+          heating: Formatter.formatNumber(properties['Heiz­kosten']),
+          total: Formatter.formatNumber(properties['Gesamt­miete'])
         },
         wbsRequired: properties["Wohn­berechti­gungs­schein"] === "Ja",
         availableFrom: properties["Verfügbar ab"],
@@ -77,7 +79,7 @@ export default class BDSProvider extends Provider {
       })
     }
 
-    return appartments
+    return listings
   }
 
   parseListingProperties(html: HTMLElement): { [key: string]: string } {

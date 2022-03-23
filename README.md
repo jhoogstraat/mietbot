@@ -22,7 +22,7 @@ Links to active listings
 ## Hamburg
   - [Baugenossenschaft Dennerstraße-Selbsthilfe eG](https://www.bds-hamburg.de/unser-angebot/wohnungsangebote/) ✅
   - [SAGA Unternehmensgruppe](https://www.saga.hamburg/immobiliensuche) ✅
-  - [Wohnungsbaugenossenschaft KAIFU-NORDLAND eG](https://kaifu.de/wohnen/hamburg)
+  - [Wohnungsbaugenossenschaft KAIFU-NORDLAND eG](https://kaifu.de/wohnen/hamburg) ✅
   - [Hanseatische Baugenossenschaft Hamburg eG](https://www.hanseatische.de/de/wohnungsangebote)
   - [Altonaer Spar- und Bauverein eG](https://2222820.hpm.immosolve.eu/?startRoute=result-list&objectIdentifier=2#!/result-list-2%60)
   - [Walddörfer Wohnungsbaugenossenschaft eG](https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2227215/HP/immo.jsp) ✅
@@ -32,6 +32,5 @@ Links to active listings
   - [Vereinigte Hamburger Wohnungsbaugenossenschaft eG](https://www.vhw-hamburg.de/wohnen/aktuelle-angebote.html)
   - [Wohnungsverein Hamburg von 1902 eG](https://wv1902.de/wohnungsangebote/)
 
-## License
-
+# License
 [MIT](https://github.com/jhoogstraat/mietbot/blob/main/LICENSE)

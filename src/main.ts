@@ -2,7 +2,7 @@ import 'dotenv/config'
 import { scheduleJob } from "node-schedule"
 import { Worker } from "bullmq"
 
-import { Appartment } from "./appartment_type"
+import { Listing } from "./listing"
 import Scraper from "./scraper/scraper"
 import Database from "./db/database"
 import DiscordBot from "./discord-connector/bot"
@@ -49,7 +49,7 @@ async function main() {
     }
   }, { connection: { host: process.env.REDIS_HOST!, port: 6379 }, sharedConnection: true })
 
-  const listingWorker = new Worker<Appartment[], void>(scraperQueueName, async (job) => {
+  const listingWorker = new Worker<Listing[], void>(scraperQueueName, async (job) => {
     if (job.name == 'error') {
       console.error(job.data)
       await bot.log("" + job.data)

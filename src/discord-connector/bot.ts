@@ -1,7 +1,7 @@
 import { Queue } from "bullmq"
 import { Client, Intents, Message, MessageOptions, TextChannel } from "discord.js"
-import { Appartment } from "../appartment_type"
-import buildEmbed from "./appartment_embed_builder"
+import { Listing } from "../listing"
+import buildEmbed from "./listing_embed_builder"
 
 export default class DiscordBot {
 
@@ -85,8 +85,8 @@ export default class DiscordBot {
         await this.debugChannel.send(message)
     }
 
-    async post(appartments: Appartment[]): Promise<void> {
-        const payload: MessageOptions = { embeds: appartments.map(buildEmbed) }
+    async post(listings: Listing[]): Promise<void> {
+        const payload: MessageOptions = { embeds: listings.map(buildEmbed) }
         var messages: Promise<Message<boolean>>[] = []
         for (const channel of this.subscriptions) {
             messages.push(channel[1].send(payload))

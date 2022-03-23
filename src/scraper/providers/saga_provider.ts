@@ -1,5 +1,5 @@
 import { Provider } from "../provider"
-import { Appartment } from "../../appartment_type"
+import { Listing } from "../../listing"
 import { parse, HTMLElement } from 'node-html-parser'
 import fetch from 'node-fetch'
 import puppeteer from 'puppeteer'
@@ -13,18 +13,18 @@ export default class SAGAProvider extends Provider {
     this.addressRegex = /\s*(?<street>.*) (?<number>.*)\n\s*(?<zipCode>\d*)\s*(?<state>\w*)\(?(?<district>\w*)?\s*/
   }
 
-  async run(browser: puppeteer.Browser): Promise<Appartment[]> {
+  async run(browser: puppeteer.Browser): Promise<Listing[]> {
     const response = await fetch(this.url).then(response => response.text())
     const html = parse(response)
 
-    const listings = html.querySelectorAll('.teaser3')
+    const htmlListings = html.querySelectorAll('.teaser3')
 
-    if (!listings) {
+    if (!htmlListings) {
       throw "[SAGA] Something wrong. DIVs with class 'teaser3' does not exist"
     }
 
-    const appartments: Appartment[] = []
-    for (let listing of listings) {
+    const listings: Listing[] = []
+    for (let listing of htmlListings) {
       const listingURL = 'https://www.saga.hamburg' + listing.querySelector('a')!.getAttribute('href')!
 
       const response = await fetch(listingURL).then(response => response.text())
@@ -38,16 +38,17 @@ export default class SAGAProvider extends Provider {
       if (previewImagePath) {
         previewImageURL = "https://www.saga.hamburg" + previewImagePath
       } else { /* Don't care if preview was not found, as there might be none. Log it though */
-        console.log(`[SAGA] No preview image for appartment: ${listingURL}`)
+        console.log(`[SAGA] No preview image for listing: ${listingURL}`)
       }
 
-      appartments.push({
+      listings.push({
         provider: 'saga',
-        appartmentId: properties["Objektnummer"],
+        id: properties["Objektnummer"],
+        category: 'apartment',
         space: {
           roomCount: formatRoomCount(properties["Zimmer"] as string),
           area: Number(properties["Wohnfläche ca."].split(" ")[0]),
-          floor: properties['Etage'] === undefined ? undefined : Number(properties['Etage']),
+          floor: properties['Etage'] === undefined ? null : Number(properties['Etage']),
           balcony: properties['Balkon'] === 'true',
           terrace: properties['Terrasse'] === 'true'
         },
@@ -72,7 +73,7 @@ export default class SAGAProvider extends Provider {
       })
     }
 
-    return appartments
+    return listings
   }
 
   parseListingProperties(html: HTMLElement): { [key: string]: string } {
@@ -88,11 +89,5 @@ export default class SAGAProvider extends Provider {
       }
       return acc
     }, {})
-
-    // const properties = await detailPage.$eval('.dl-props', (node) => {
-    //   const keys = Array.from(node.querySelectorAll('dt'), column => column.innerText)
-    //   const values = Array.from(node.querySelectorAll('dd'), column => column.innerText)
-    //   return keys.reduce<{ [key: string]: string }>((acc, key, i) => (acc[key] = values[i], acc), {})
-    // })
   }
 }

@@ -1,7 +1,7 @@
 import { Queue } from 'bullmq';
 import 'dotenv/config'
 import puppeteer from 'puppeteer'
-import { ProviderName } from '../appartment_type.js';
+import { ProviderName } from '../listing.js';
 import { Provider } from './provider.js';
 import BDSProvider from './providers/bds_provider.js'
 import SAGAProvider from './providers/saga_provider.js';
@@ -43,17 +43,17 @@ export default class Scraper {
       try {
         console.log(`[${provider.name}] Scraping...`)
 
-        const appartments = await provider.run(browser)
-        const newListings = provider.filterNew(appartments)
+        const listings = await provider.run(browser)
+        const newListings = provider.filterNew(listings)
 
         if (newListings.length > 0) {
-          console.log(`[${provider.name}] new listings: ${newListings.map(l => l.appartmentId)}`)
+          console.log(`[${provider.name}] new listings: ${newListings.map(l => l.id)}`)
           this.queue.add(provider.name, newListings)
 
-          // for (let appartment of newListings) {
-          //   await page.goto(appartment.detailURL)
+          // for (let listing of newListings) {
+          //   await page.goto(listing.detailURL)
           //   const height = await page.evaluate(() => document.documentElement.scrollHeight)
-          //   await page.pdf({ path: `listings/${appartment.provider}/${Buffer.from(appartment.appartmentId).toString('base64')}.pdf`, height: height + "px" })
+          //   await page.pdf({ path: `listings/${listing.provider}/${Buffer.from(listing.id).toString('base64')}.pdf`, height: height + "px" })
           // }
         } else {
           console.log(`[${provider.name}] no new listings`)
