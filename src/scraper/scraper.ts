@@ -20,7 +20,7 @@ export default class Scraper {
 
   static async init(scrapeQueueName: string, listings: { [key in ProviderName]: Set<string> }): Promise<Scraper> {
     const scrapeQueue = new Queue(scrapeQueueName, { connection: { host: process.env.REDIS_HOST!, port: 6379 }, sharedConnection: true })
-    
+
     const bds = new BDSProvider(listings["bds"])
     const saga = new SAGAProvider(listings["saga"])
     const walddoerfer = new WalddoerferProvider(listings["walddoerfer"])

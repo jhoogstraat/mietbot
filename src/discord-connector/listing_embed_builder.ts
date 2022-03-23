@@ -16,7 +16,7 @@ function buildEmbed(listing: Listing): MessageEmbed {
     .setColor(providerColorMap.get(listing.provider)!)
 
   switch (listing.category) {
-    case 'apartment': addApartmentFields(listing, embed)
+    case 'apartment': addApartmentFields(listing, embed); break
     case 'parking': addParkingSpaceFields(listing, embed)
   }
 
@@ -54,7 +54,7 @@ function addApartmentFields(listing: Listing, embed: MessageEmbed) {
 }
 
 function formatAddress(address: Address): string {
-  return `[${address.street} ${address.number}](https://maps.google.com/?q=${encodeURIComponent(address.street + " " + address.number + " " + address.zipCode)})`
+  return `[${address.street} ${address.number ?? ""}](https://maps.google.com/?q=${encodeURIComponent(address.street + " " + address.number ?? "" + " " + address.zipCode)})`
 }
 
 // Heating costs might be null, thus total costs do not include them aswell

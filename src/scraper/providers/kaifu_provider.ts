@@ -14,7 +14,6 @@ export default class KAIFUProvider extends Provider {
 
         const apartments: Listing[] = []
         for (let listing of listings) {
-            
 
             apartments.push({
                 provider: this.name,
