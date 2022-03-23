@@ -39,7 +39,7 @@ export default class DiscordBot {
                 await this.unsubscribe(interaction.channelId)
                 interaction.reply(`Du wirst nun nicht mehr über neue Inserate in diesem Channel informiert`)
             } else if (interaction.commandName === 'list') {
-                interaction.reply("Derzeit informieren wir über Inserate der folgenden Genossenschaften:\n- Baugenossenschaft Dennerstraße-Selbsthilfe eG\n- SAGA Unternehemsngruppe")
+                interaction.reply("Derzeit informieren wir über Inserate der folgenden Genossenschaften:\n- Baugenossenschaft Dennerstraße-Selbsthilfe eG\n- SAGA Unternehemsngruppe\n- Walddörfer Wohnungsbaugenossenschaft eG\n- Wohnungsbaugenossenschaft KAIFU-NORDLAND eG")
             }
         })
     }
