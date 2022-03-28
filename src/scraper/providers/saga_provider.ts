@@ -4,6 +4,7 @@ import { parse, HTMLElement } from 'node-html-parser'
 import fetch from 'node-fetch'
 import puppeteer from 'puppeteer'
 import { formatRoomCount } from "../formatter"
+import * as Formatter from '../formatter'
 
 export default class SAGAProvider extends Provider {
   addressRegex: RegExp
@@ -47,16 +48,16 @@ export default class SAGAProvider extends Provider {
         category: 'apartment',
         space: {
           roomCount: formatRoomCount(properties["Zimmer"] as string),
-          area: Number(properties["Wohnfläche ca."].split(" ")[0]),
+          area: Formatter.formatNumber(properties["Wohnfläche ca."]),
           floor: properties['Etage'] === undefined ? null : Number(properties['Etage']),
           balcony: properties['Balkon'] === 'true',
           terrace: properties['Terrasse'] === 'true'
         },
         costs: {
-          nettoCold: Number(properties['Netto-Kalt-Miete'].split(" ")[0].replace(",", ".")),
-          operating: Number(properties['Betriebskosten'].split(" ")[0].replace(",", ".")),
-          heating: Number(properties['Heizkosten'].split(" ")[0].replace(",", ".")),
-          total: Number(properties['Gesamtmiete'].split(" ")[0].replace(",", "."))
+          nettoCold: Formatter.formatNumber(properties['Netto-Kalt-Miete']),
+          operating: Formatter.formatNumber(properties['Betriebskosten']),
+          heating: Formatter.formatNumber(properties['Heizkosten']),
+          total: Formatter.formatNumber(properties['Gesamtmiete'])
         },
         address: {
           street: address.street,
