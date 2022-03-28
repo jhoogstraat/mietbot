@@ -20,16 +20,17 @@ This bot that watches listings of building cooperatives and notifies you when a 
 # Genossenschaften
 Links to active listings
 ## Hamburg
-  - [Baugenossenschaft Dennerstraße-Selbsthilfe eG](https://www.bds-hamburg.de/unser-angebot/wohnungsangebote/) ✅
-  - [SAGA Unternehmensgruppe](https://www.saga.hamburg/immobiliensuche) ✅
-  - [Wohnungsbaugenossenschaft KAIFU-NORDLAND eG](https://kaifu.de/wohnen/hamburg) ✅
-  - [Hanseatische Baugenossenschaft Hamburg eG](https://www.hanseatische.de/de/wohnungsangebote)
   - [Altonaer Spar- und Bauverein eG](https://2222820.hpm.immosolve.eu/?startRoute=result-list&objectIdentifier=2#!/result-list-2%60)
-  - [Walddörfer Wohnungsbaugenossenschaft eG](https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2227215/HP/immo.jsp) ✅
   - [Baugenossenschaft der Buchdrucker eG](https://buchdrucker.immomio.de/)
   - [Baugenossenschaft dhu eG](https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2223228/HP/immo.jsp)
+  - [Baugenossenschaft Dennerstraße-Selbsthilfe eG](https://www.bds-hamburg.de/unser-angebot/wohnungsangebote/) ✅
+  - [Hamburger Lehrer-Baugenossenschaft eG](https://portal.immobilienscout24.de/ergebnisliste/45584335)
   - [HANSA Baugenossenschaft eG](https://hansa-baugenossenschaft.de/wohnen/unsere-wohnungen)
+  - [Hanseatische Baugenossenschaft Hamburg eG](https://www.hanseatische.de/de/wohnungsangebote)
+  - [SAGA Unternehmensgruppe](https://www.saga.hamburg/immobiliensuche) ✅
   - [Vereinigte Hamburger Wohnungsbaugenossenschaft eG](https://www.vhw-hamburg.de/wohnen/aktuelle-angebote.html)
+  - [Walddörfer Wohnungsbaugenossenschaft eG](https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2227215/HP/immo.jsp) ✅
+  - [Wohnungsbaugenossenschaft KAIFU-NORDLAND eG](https://kaifu.de/wohnen/hamburg) ✅
   - [Wohnungsverein Hamburg von 1902 eG](https://wv1902.de/wohnungsangebote/)
 
 # License
