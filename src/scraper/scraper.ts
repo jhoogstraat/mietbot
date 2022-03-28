@@ -4,6 +4,7 @@ import puppeteer from 'puppeteer'
 import { ProviderName } from '../listing.js';
 import { Provider } from './provider.js';
 import BDSProvider from './providers/bds_provider.js'
+import BVEProvider from './providers/bve_provider.js';
 import KAIFUProvider from './providers/kaifu_provider.js';
 import SAGAProvider from './providers/saga_provider.js';
 import WalddoerferProvider from './providers/walddoerfer_provider.js';
@@ -25,8 +26,9 @@ export default class Scraper {
     const saga = new SAGAProvider(listings["saga"])
     const walddoerfer = new WalddoerferProvider(listings["walddoerfer"])
     const kaifu = new KAIFUProvider(listings["kaifu"])
+    const bve = new BVEProvider(listings['bve'])
 
-    return new Scraper(scrapeQueue, [bds, saga, walddoerfer, kaifu])
+    return new Scraper(scrapeQueue, [bds, saga, walddoerfer, kaifu, bve])
   }
 
   async launchBrowser(): Promise<puppeteer.Browser> {

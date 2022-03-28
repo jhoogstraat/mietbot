@@ -1,4 +1,4 @@
-export type ProviderName = 'bds' | 'saga' | 'walddoerfer' | 'kaifu'
+export type ProviderName = 'bds' | 'saga' | 'walddoerfer' | 'kaifu' | 'bve'
 
 export type Category = 'parking' | 'apartment'
 
