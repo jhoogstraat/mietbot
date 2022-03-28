@@ -81,8 +81,8 @@ export default class DiscordBot {
         return new DiscordBot(bot, debugChannel, channels, queue)
     }
 
-    async log(message: string): Promise<void> {
-        await this.debugChannel.send(message)
+    async log(message: any): Promise<void> {
+        await this.debugChannel.send(JSON.stringify(message))
     }
 
     async post(listings: Listing[]): Promise<void> {

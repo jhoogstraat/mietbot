@@ -45,14 +45,14 @@ async function main() {
       }
     } catch (error) {
       console.error(error)
-      bot.log("" + error)
+      bot.log(error)
     }
   }, { connection: { host: process.env.REDIS_HOST!, port: 6379 }, sharedConnection: true })
 
   const listingWorker = new Worker<Listing[], void>(scraperQueueName, async (job) => {
     if (job.name == 'error') {
       console.error(job.data)
-      await bot.log("" + job.data)
+      await bot.log(job.data)
       return
     }
 
@@ -60,14 +60,14 @@ async function main() {
       await db.update(job.data)
     } catch (error) {
       console.error(error)
-      await bot.log("" + error)
+      await bot.log(error)
     }
 
     try {
       await bot.post(job.data)
     } catch (error) {
       console.error(error)
-      await bot.log("" + error)
+      await bot.log(error)
     }
 
   }, { connection: { host: process.env.REDIS_HOST!, port: 6379 }, sharedConnection: true })
