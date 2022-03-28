@@ -24,6 +24,8 @@ Links to active listings
   - [Baugenossenschaft der Buchdrucker eG](https://buchdrucker.immomio.de/)
   - [Baugenossenschaft dhu eG](https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2223228/HP/immo.jsp)
   - [Baugenossenschaft Dennerstraße-Selbsthilfe eG](https://www.bds-hamburg.de/unser-angebot/wohnungsangebote/) ✅
+  - [Baugenossenschaft Hamburger Wohnen eG](https://www.hamburgerwohnen.de/wohnungsbestand/freie-wohnungen.html)
+  - [Bauverein der Elbgemeinden eG](https://www.bve.de/wohnen-beim-bve/wohnungsbestand/wohnungsangebote/)
   - [Hamburger Lehrer-Baugenossenschaft eG](https://portal.immobilienscout24.de/ergebnisliste/45584335)
   - [HANSA Baugenossenschaft eG](https://hansa-baugenossenschaft.de/wohnen/unsere-wohnungen)
   - [Hanseatische Baugenossenschaft Hamburg eG](https://www.hanseatische.de/de/wohnungsangebote)
