@@ -47,7 +47,6 @@ function addApartmentFields(listing: Listing, embed: MessageEmbed) {
     .addField("Wohnfläche", `ca. ${listing.space.area} m²`, true)
     .addField("Etage", listing.space.floor?.toString() ?? "Keine Angabe", true)
     .addField("Balkon / Terrasse", formatBalconyAndTerrace(listing.space), true)
-    // .addField("Terrasse", formatBoolean(apartment.space.terrace), true)
     .addField("WBS", formatBoolean(listing.wbsRequired), true)
     .addField("Netto-Kaltmiete", `${listing.costs.nettoCold} €`, true)
     .addField("Gesamtmiete", formatTotalCosts(listing.costs), true)
@@ -69,7 +68,7 @@ function formatTotalCosts(costs: Costs): string {
 
 function formatBalconyAndTerrace(space: Space): string {
   if (space.balcony === true && space.terrace === true) {
-    return "Balkon oder Terrasse"
+    return "Ja"
   } else if (space.balcony) {
     return "Balkon"
   } else if (space.terrace) {

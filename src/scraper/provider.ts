@@ -24,4 +24,14 @@ export abstract class Provider {
   updateCache(apartments: Listing[]) {
     this.activeListings = new Set(apartments.map(apt => apt.id))
   }
+
+  async queryDistrict(zipCode: string): Promise<string | null> {
+    try {
+      const response = await fetch(`api.zippopotam.us/de/${zipCode}`).then(response => response.json())
+      return response.places[response.places.length - 1]["place name"] ?? null
+    } catch (error) {
+      console.log(error)
+      return null
+    }
+  }
 }

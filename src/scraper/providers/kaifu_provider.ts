@@ -31,7 +31,7 @@ export default class KAIFUProvider extends Provider {
                     number: listing.address.street_num ?? null,
                     zipCode: listing.address.postcode,
                     state: listing.address.town,
-                    district: null,
+                    district: await this.queryDistrict(listing.address.postcode),
                 },
                 costs: {
                     nettoCold: Formatter.formatNumber(listing.expenses.netto),

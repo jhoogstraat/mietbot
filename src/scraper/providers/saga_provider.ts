@@ -1,5 +1,5 @@
 import { Provider } from "../provider"
-import { Listing } from "../../listing"
+import { Address, Listing } from "../../listing"
 import { parse, HTMLElement } from 'node-html-parser'
 import fetch from 'node-fetch'
 import puppeteer from 'puppeteer'
@@ -7,11 +7,10 @@ import { formatRoomCount } from "../formatter"
 import * as Formatter from '../formatter'
 
 export default class SAGAProvider extends Provider {
-  addressRegex: RegExp
+  addressRegex = /\s*(?<street>.*)\s+(?<number>.*)\n\s*(?<zipCode>\d*)\s*(?<state>[^(]*)\(?(?<district>[^)]*)?/
 
   constructor(listings: Set<string>) {
     super('saga', 'https://www.saga.hamburg/immobiliensuche', listings)
-    this.addressRegex = /\s*(?<street>.*) (?<number>.*)\n\s*(?<zipCode>\d*)\s*(?<state>\w*)\(?(?<district>\w*)?\s*/
   }
 
   async run(browser: puppeteer.Browser): Promise<Listing[]> {
@@ -32,7 +31,11 @@ export default class SAGAProvider extends Provider {
       const html = parse(response)
 
       const properties = this.parseListingProperties(html)
-      const address = html.querySelector('p.ft-semi')!.innerText.match(this.addressRegex)!.groups!
+      const address = html.querySelector('p.ft-semi')!.innerText.match(this.addressRegex)!.groups! as Address
+
+      if (!address.district) {
+        address.district = await this.queryDistrict(address.zipCode)
+      }
 
       let previewImageURL: string | null = null
       const previewImagePath = listing.querySelector('img')?.getAttribute('src')
