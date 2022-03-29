@@ -3,10 +3,10 @@ import { Listing } from "../../listing"
 import puppeteer from 'puppeteer'
 import * as Formatter from '../formatter'
 
-export default class WalddoerferProvider extends Provider {
+export default class DHUProvider extends Provider {
 
   constructor(listings: Set<string>) {
-    super('walddoerfer', 'https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2227215/HP/immo.jsp', listings)
+    super('dhu', 'https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2223228/HP/immo.jsp', listings)
   }
 
   async run(browser: puppeteer.Browser): Promise<Listing[]> {
@@ -36,11 +36,11 @@ export default class WalddoerferProvider extends Provider {
 
       const id = await page.$eval('#labels\\.code', node => node.innerHTML)
       if (!id) {
-        throw "[WALDDOERFER] Something wrong. Id could not be extracted"
+        throw "[DHU] Something wrong. Id could not be extracted"
       }
 
       listings.push({
-        provider: 'walddoerfer',
+        provider: 'dhu',
         id: id,
         category: 'apartment',
         address: {
@@ -54,7 +54,7 @@ export default class WalddoerferProvider extends Provider {
           roomCount: await page.$eval('#labels\\.anzahlZimmer', node => node.innerHTML).then(text => Formatter.formatRoomCount(text)),
           area: await page.$eval('#labels\\.wohnflaeche', node => node.innerHTML).then(text => Formatter.formatNumber(text)),
           floor: await page.$eval('#labels\\.etage', node => node.innerHTML).then(text => Formatter.formatFloor(text)),
-          balcony: await page.$eval('#showDetail\\.descriptions\\.ausstattungsbeschreibung', node => node.innerHTML).then(text => text.includes("Balkon")),
+          balcony: await page.$eval('#showDetail\\.descriptions\\.ausstattungsbeschreibung', node => node.innerHTML).then(text => this.log(text)),
           terrace: await page.$eval('#showDetail\\.descriptions\\.ausstattungsbeschreibung', node => node.innerHTML).then(text => text.includes("Terrasse"))
         },
         costs: {
@@ -76,4 +76,8 @@ export default class WalddoerferProvider extends Provider {
     return listings
   }
 
+  log(text: string): boolean {
+      console.log(text)
+      return text.includes("Balkon")
+  }
 }

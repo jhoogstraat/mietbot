@@ -22,7 +22,7 @@ Links to active listings
 ## Hamburg
   - [Altonaer Spar- und Bauverein eG](https://2222820.hpm.immosolve.eu/?startRoute=result-list&objectIdentifier=2#!/result-list-2%60)
   - [Baugenossenschaft der Buchdrucker eG](https://buchdrucker.immomio.de/)
-  - [Baugenossenschaft dhu eG](https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2223228/HP/immo.jsp)
+  - [Baugenossenschaft dhu eG](https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2223228/HP/immo.jsp) ✅
   - [Baugenossenschaft Dennerstraße-Selbsthilfe eG](https://www.bds-hamburg.de/unser-angebot/wohnungsangebote/) ✅
   - [Baugenossenschaft Hamburger Wohnen eG](https://www.hamburgerwohnen.de/wohnungsbestand/freie-wohnungen.html)
   - [Bauverein der Elbgemeinden eG](https://www.bve.de/wohnen-beim-bve/wohnungsbestand/wohnungsangebote/) ✅

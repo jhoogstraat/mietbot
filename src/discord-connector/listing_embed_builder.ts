@@ -8,7 +8,8 @@ const providerColorMap: Map<ProviderName, ColorResolvable> = new Map([
   ["saga", "#55bed5"],
   ["walddoerfer", "#005D43"],
   ["kaifu", "#a0102b"],
-  ["bve", "#00649b"]
+  ["bve", "#00649b"],
+  ["dhu", "#005D43"],
 ])
 
 function buildEmbed(listing: Listing): MessageEmbed {

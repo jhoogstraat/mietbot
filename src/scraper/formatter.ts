@@ -19,3 +19,14 @@ export function formatRoomCount(text: string): number {
 export function formatNumber(text: string): number {
     return Number(text.match(/[0-9,]/g)!.join("").replace(",", "."))
 }
+
+// Erdgeschoss -> 0
+// '12' -> 12
+export function formatFloor(text: string): number {
+    text = text.trim()
+    if (text === 'Erdgeschoss') {
+        return 0
+    } else {
+        return Number(text.match(/\d+/)![0])
+    }
+}
