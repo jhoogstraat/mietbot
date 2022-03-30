@@ -31,7 +31,6 @@ export default class HBHProvider extends Provider {
       const html = parse(response)
 
       const properties = this.parseListingProperties(html)
-      console.log(properties)
       let previewImageURL: string | null = null
       const previewImagePath = listing.querySelector('.v_bild img')?.getAttribute('srcset')
       if (previewImagePath) {
