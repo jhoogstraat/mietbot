@@ -1,11 +1,11 @@
-export type ProviderName = 'bds' | 'saga' | 'walddoerfer' | 'kaifu' | 'bve' | 'dhu'
+export type ProviderName = 'bds' | 'saga' | 'walddoerfer' | 'kaifu' | 'bve' | 'dhu' | 'hbh'
 
 export type Category = 'parking' | 'apartment'
 
 export type Address = {
   street: string,
   number: string | null,
-  zipCode: string,
+  zipCode: string | null,
   state: string,
   district: string | null
 }
@@ -20,7 +20,7 @@ export type Space = {
 
 export type Costs = {
   nettoCold: number,
-  operating: number,
+  operating: number | null,
   heating: number | null,
   total: number
 }

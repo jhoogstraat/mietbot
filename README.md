@@ -28,7 +28,7 @@ Links to active listings
   - [Bauverein der Elbgemeinden eG](https://www.bve.de/wohnen-beim-bve/wohnungsbestand/wohnungsangebote/) ✅
   - [Hamburger Lehrer-Baugenossenschaft eG](https://portal.immobilienscout24.de/ergebnisliste/45584335)
   - [HANSA Baugenossenschaft eG](https://hansa-baugenossenschaft.de/wohnen/unsere-wohnungen)
-  - [Hanseatische Baugenossenschaft Hamburg eG](https://www.hanseatische.de/de/wohnungsangebote)
+  - [Hanseatische Baugenossenschaft Hamburg eG](https://www.hanseatische.de/de/wohnungsangebote) ✅
   - [SAGA Unternehmensgruppe](https://www.saga.hamburg/immobiliensuche) ✅
   - [Vereinigte Hamburger Wohnungsbaugenossenschaft eG](https://www.vhw-hamburg.de/wohnen/aktuelle-angebote.html)
   - [Walddörfer Wohnungsbaugenossenschaft eG](https://hpm2.immosolve.eu/immosolve_presentation/pub/modern/2227215/HP/immo.jsp) ✅

@@ -10,6 +10,7 @@ const providerColorMap: Map<ProviderName, ColorResolvable> = new Map([
   ["kaifu", "#a0102b"],
   ["bve", "#00649b"],
   ["dhu", "#005D43"],
+  ["hbh", "#65ecff"],
 ])
 
 function buildEmbed(listing: Listing): MessageEmbed {
@@ -44,7 +45,7 @@ function addParkingSpaceFields(listing: Listing, embed: MessageEmbed) {
 
 function addApartmentFields(listing: Listing, embed: MessageEmbed) {
   embed
-    .setTitle(`${listing.space.roomCount} Zimmer in ${listing.address.district ?? listing.address.zipCode}`)
+    .setTitle(`${listing.space.roomCount} Zimmer in ${listing.address.district ?? listing.address.zipCode ?? listing.address.state}`)
     .addField("Wohnfläche", `ca. ${listing.space.area} m²`, true)
     .addField("Etage", listing.space.floor?.toString() ?? "Keine Angabe", true)
     .addField("Balkon / Terrasse", formatBalconyAndTerrace(listing.space), true)
@@ -63,12 +64,14 @@ function formatTotalCosts(costs: Costs): string {
   if (costs.heating) {
     return `${costs.total} €`
   } else {
-    return `${costs.total} € (zzgl. Heizkosten)`
+    return `${costs.total} € (evtl. + Heizkosten)`
   }
 }
 
 function formatBalconyAndTerrace(space: Space): string {
-  if (space.balcony === true && space.terrace === true) {
+  if (space.balcony === null && space.terrace === null) {
+    return "Keine Angabe"
+  } else if (space.balcony === true && space.terrace === true) {
     return "Ja"
   } else if (space.balcony) {
     return "Balkon"

@@ -16,8 +16,13 @@ export function formatRoomCount(text: string): number {
 
 // 599,00 -> 599
 // 1.250,99 -> 1250.99
+// 1.485,38 € ( 7,00 € pro m2 ) -> 1485.38
 export function formatNumber(text: string): number {
-    return Number(text.match(/[0-9,]/g)!.join("").replace(",", "."))
+    let match = text.match(/[0-9,.]*/)![0]
+    if (match.includes(",")) {
+        match = match.replace(".", "")
+    }
+    return Number(match.replace(",", "."))
 }
 
 // Erdgeschoss -> 0

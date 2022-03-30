@@ -54,7 +54,7 @@ export default class DHUProvider extends Provider {
           roomCount: await page.$eval('#labels\\.anzahlZimmer', node => node.innerHTML).then(text => Formatter.formatRoomCount(text)),
           area: await page.$eval('#labels\\.wohnflaeche', node => node.innerHTML).then(text => Formatter.formatNumber(text)),
           floor: await page.$eval('#labels\\.etage', node => node.innerHTML).then(text => Formatter.formatFloor(text)),
-          balcony: await page.$eval('#showDetail\\.descriptions\\.ausstattungsbeschreibung', node => node.innerHTML).then(text => this.log(text)),
+          balcony: await page.$eval('#showDetail\\.descriptions\\.ausstattungsbeschreibung', node => node.innerHTML).then(text => text.includes("Balkon")),
           terrace: await page.$eval('#showDetail\\.descriptions\\.ausstattungsbeschreibung', node => node.innerHTML).then(text => text.includes("Terrasse"))
         },
         costs: {
@@ -74,10 +74,5 @@ export default class DHUProvider extends Provider {
     }
 
     return listings
-  }
-
-  log(text: string): boolean {
-      console.log(text)
-      return text.includes("Balkon")
   }
 }

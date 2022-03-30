@@ -34,7 +34,7 @@ export default class SAGAProvider extends Provider {
       const address = html.querySelector('p.ft-semi')!.innerText.match(this.addressRegex)!.groups! as Address
 
       if (!address.district) {
-        address.district = await this.queryDistrict(address.zipCode)
+        address.district = await this.queryDistrict(address.zipCode!)
       }
 
       let previewImageURL: string | null = null

@@ -33,7 +33,7 @@ export default class BVEProvider extends Provider {
           space = this.parseSpace(table.innerText)
           address = this.parseAddress(table.innerText)
           if (!address.district) {
-            address.district = await this.queryDistrict(address.zipCode)
+            address.district = await this.queryDistrict(address.zipCode!)
           }
         } else if (element.innerText === 'Monatliche Kosten') {
           const table = element.nextElementSibling
