@@ -28,7 +28,7 @@ export abstract class Provider {
 
   async queryDistrict(zipCode: string): Promise<string | null> {
     try {
-      const response = await fetch(`api.zippopotam.us/de/${zipCode}`).then(response => response.json()) as any
+      const response = await fetch(`https://api.zippopotam.us/de/${zipCode}`).then(response => response.json()) as any
       return response.places[response.places.length - 1]["place name"] ?? null
     } catch (error) {
       console.log(error)
