@@ -47,10 +47,11 @@ function addApartmentFields(listing: Listing, embed: MessageEmbed) {
   embed
     .setTitle(`${listing.space.roomCount} Zimmer in ${listing.address.district ?? listing.address.zipCode ?? listing.address.state}`)
     .addField("Wohnfläche", `ca. ${listing.space.area} m²`, true)
+    .addField("Zimmer", listing.space.roomCount.toString(), true)
     .addField("Etage", listing.space.floor?.toString() ?? "Keine Angabe", true)
     .addField("Balkon / Terrasse", formatBalconyAndTerrace(listing.space), true)
     .addField("WBS", formatBoolean(listing.wbsRequired), true)
-    .addField("Netto-Kaltmiete", `${listing.costs.nettoCold} €`, true)
+    // .addField("Netto-Kaltmiete", `${listing.costs.nettoCold} €`, true)
     .addField("Gesamtmiete", formatTotalCosts(listing.costs), true)
     .addField("Addresse", formatAddress(listing.address))
 }
