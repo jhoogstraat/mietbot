@@ -66,7 +66,7 @@ export default class SAGAProvider extends Provider {
           street: address.street,
           number: address.number,
           zipCode: address.zipCode,
-          state: address.state,
+          state: address.state.trim(),
           district: address.district,
         },
         wbsRequired: null,
