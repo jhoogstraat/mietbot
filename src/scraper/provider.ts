@@ -30,7 +30,7 @@ export abstract class Provider {
     try {
       const response = await fetch(`https://api.zippopotam.us/de/${zipCode}`).then(response => response.json()) as any
       const district = response.places.find((district: any) => district["place name"] !== 'Hamburg') ?? null
-      return district["place name"] ?? null
+      return district?.["place name"] ?? null
     } catch (error) {
       console.log(error)
       return null
