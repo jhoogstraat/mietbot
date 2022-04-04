@@ -66,7 +66,7 @@ export default class WalddoerferProvider extends Provider {
         wbsRequired: await page.$eval('#labels\\.wohnberechtigungsschein', (node) => node.innerHTML === 'Ja').catch(() => null),
         availableFrom: await page.$eval('#labels\\.availableStart', (node) => node.innerHTML).catch(() => null),
         detailURL: this.url + "?rng=" + Math.random(), // <- Make unique
-        previewImageURL: await page.$eval('.imageBig', (node) => node.getAttribute('src')),
+        previewImageURL: await page.$eval('.imageBig', (node) => node.getAttribute('src')).catch(err =>  { console.log(err); return null } ),
         timestamp: new Date()
       })
 
