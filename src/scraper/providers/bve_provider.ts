@@ -37,7 +37,7 @@ export default class BVEProvider extends Provider {
           }
         } else if (element.innerText === 'Monatliche Kosten') {
           const table = element.nextElementSibling
-          costs = this.parseCosts(table.innerText)
+          costs = this.parseCosts(table)
         } else if (element.innerText === 'Genossenschaftsanteile') {
 
         } else if (element.innerText === 'Wohnungsbeschreibung') {
@@ -103,12 +103,40 @@ export default class BVEProvider extends Provider {
     }
   }
 
-  parseCosts(text: string): Costs {
+  parseCosts(table: HTMLElement): Costs {
+    let nettoCold = null
+    let operating = null
+    let heating = null
+    let total = null
+
+    for (const row of table.querySelectorAll('.table-row')) {
+      const cells = row.querySelectorAll('.table-cell')
+
+      switch (cells[0].innerText) {
+        case 'Nutzungsentgelt kalt:':
+          nettoCold = Formatter.formatNumber(cells[1].innerText)
+          break
+        case 'Betriebskosten-Vorauszahlung:':
+          operating = Formatter.formatNumber(cells[1].innerText)
+          break
+        case 'Heizkosten-Vorauszahlung:':
+          heating = Formatter.formatNumber(cells[1].innerText)
+          break
+        case 'Gesamtnutzungsentgelt:':
+          total = Formatter.formatNumber(cells[1].innerText)
+          break
+      }
+    }
+    
+    if (nettoCold === null || total === null) {
+      throw ['[BVE] Netto-Cold or total costs missing']
+    }
+
     return {
-      nettoCold: Formatter.formatNumber(text.match(/Nutzungsentgelt kalt:([0-9,]*)/)![1]),
-      operating: Formatter.formatNumber(text.match(/Betriebskosten-Vorauszahlung:([0-9,]*)/)![1]),
-      heating: Formatter.formatNumber(text.match(/Heizkosten-Vorauszahlung:([0-9,]*)/)![1]),
-      total: Formatter.formatNumber(text.match(/Gesamtnutzungsentgelt:([0-9,]*)/)![1]),
+      nettoCold,
+      operating,
+      heating,
+      total,
     }
   }
 }
