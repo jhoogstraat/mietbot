@@ -19,35 +19,57 @@ export default class DiscordBot {
         client.on('interactionCreate', async interaction => {
             if (!interaction.isCommand()) return
 
-            if (interaction.commandName === 'subscribe') {
-                if (interaction.channel?.type !== 'GUILD_TEXT') {
-                    return interaction.reply("Dieser Channel ist kein Textchannel. Bitte versuche es erneut in einem Textchannel")
-                }
+            switch (interaction.commandName) {
+                case 'subscribe':
+                    if (interaction.channel?.type !== 'GUILD_TEXT') {
+                        return interaction.reply("Dieser Channel ist kein Textchannel. Bitte versuche es erneut in einem Textchannel")
+                    }
 
-                if (this.subscriptions.has(interaction.channelId)) {
-                    return interaction.reply("Ich informiere bereits über neue Inserate in diesem Channel")
-                }
+                    if (this.subscriptions.has(interaction.channelId)) {
+                        return interaction.reply("Ich informiere bereits über neue Inserate in diesem Channel")
+                    }
 
-                await this.subscribe(interaction.channel)
-                interaction.reply("Du wirst nun über neue Inserate in diesen Channel informiert 🎉")
+                    await this.subscribe(interaction.channel)
 
-            } else if (interaction.commandName === 'unsubscribe') {
-                if (!this.subscriptions.has(interaction.channelId)) {
-                    return interaction.reply("Dieser Channel wird nicht über neue Inserate benachrichtigt")
-                }
+                    interaction.reply("Du wirst nun über neue Inserate in diesen Channel informiert 🎉")
+                    break
+                case 'unsubscribe':
+                    if (!this.subscriptions.has(interaction.channelId)) {
+                        return interaction.reply("Dieser Channel wird nicht über neue Inserate benachrichtigt")
+                    }
 
-                await this.unsubscribe(interaction.channelId)
-                interaction.reply(`Du wirst nun nicht mehr über neue Inserate in diesem Channel informiert`)
-            } else if (interaction.commandName === 'list') {
-                interaction.reply("Derzeit informieren wir über Inserate der folgenden Genossenschaften:\n"
-                    + "- Baugenossenschaft dhu eG"
-                    + "- Baugenossenschaft Dennerstraße-Selbsthilfe eG\n"
-                    + "- Bauverein der Elbgemeinden eG"
-                    + "- Hanseatische Baugenossenschaft Hamburg eG"
-                    + "- SAGA Unternehemsngruppe\n"
-                    + "- Walddörfer Wohnungsbaugenossenschaft eG\n"
-                    + "- Wohnungsbaugenossenschaft KAIFU-NORDLAND eG"
-                )
+                    await this.unsubscribe(interaction.channelId)
+                    interaction.reply(`Du wirst nun nicht mehr über neue Inserate in diesem Channel informiert`)
+                    break
+                case 'filter':
+                    const channel = interaction.channel
+                    if (interaction.channel?.type !== 'GUILD_TEXT') {
+                        return interaction.reply("Dieser Channel ist kein Textchannel. Bitte versuche es erneut in einem Textchannel")
+                    }
+
+                    if (this.subscriptions.has(interaction.channelId)) {
+                        return interaction.reply("Ich informiere bereits über neue Inserate in diesem Channel")
+                    }
+
+                    const rooms = interaction.options.getNumber('Rooms')
+                    const size = interaction.options.getNumber('Size')
+
+                    interaction.reply("Filters are work in progress currently.")
+                    break
+                case 'list':
+                    interaction.reply("Derzeit informieren wir über Inserate der folgenden Genossenschaften:\n"
+                        + "- Baugenossenschaft dhu eG"
+                        + "- Baugenossenschaft Dennerstraße-Selbsthilfe eG\n"
+                        + "- Bauverein der Elbgemeinden eG"
+                        + "- Hanseatische Baugenossenschaft Hamburg eG"
+                        + "- SAGA Unternehemsngruppe\n"
+                        + "- Walddörfer Wohnungsbaugenossenschaft eG\n"
+                        + "- Wohnungsbaugenossenschaft KAIFU-NORDLAND eG"
+                    )
+                    break
+                default:
+                    interaction.reply("Unknown command provided")
+                    break
             }
         })
     }
@@ -94,7 +116,10 @@ export default class DiscordBot {
     }
 
     async post(listings: Listing[]): Promise<void> {
-        const payload: MessageOptions = { embeds: listings.map(buildEmbed) }
+        // TODO: Make filters configurable. Currently fitted for my specific situation.
+        const filterdListings = listings.filter(listing => listing.space.roomCount > 2)
+
+        const payload: MessageOptions = { embeds: filterdListings.map(buildEmbed) }
         var messages: Promise<Message<boolean>>[] = []
         for (const channel of this.subscriptions) {
             messages.push(channel[1].send(payload))
