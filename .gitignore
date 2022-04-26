@@ -1,4 +1,5 @@
 .env
 jobs.json
-dist/
+out/
 node_modules/
+listings/

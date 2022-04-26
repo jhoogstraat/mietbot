@@ -1,12 +1,52 @@
 version: '3'
 
+volumes:
+  mongo_data:
+
 services:
   bot:
-    image: mietbot:latest
+    image: jhoogstraat/mietbot:latest
     build: .
-    restart: always
+    restart: unless-stopped
     volumes:
-      - ./jobs.json:/bot/jobs.json
+      - ./listings:/bot/listings
+    depends_on:
+      - redis
+      - mongodb
     environment:
       TOKEN: ${TOKEN}
-      TZ: Europe/Berlin
+      TZ: ${TIMEZONE}
+      DEBUG_CHANNEL: ${DEBUG_CHANNEL}
+      SCRAPING_INTERVAL: ${SCRAPING_INTERVAL}
+      REDIS_HOST: ${REDIS_HOST}
+      MONGO_HOST: ${MONGO_HOST}
+      MONGO_USER: ${MONGO_PASS}
+      MONGO_PASS: ${MONGO_PASS}
+
+  redis:
+    image: redis:latest
+    container_name: ${REDIS_HOST}
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:4.4
+    container_name: ${MONGO_HOST}
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
+
+  mongo-express:
+    image: mongo-express
+    profiles: [ "inspect" ]
+    depends_on:
+      - mongodb
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: ${MONGO_HOST}
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_PASS}
