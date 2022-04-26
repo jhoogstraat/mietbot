@@ -79,7 +79,7 @@ export default class BVEProvider extends Provider {
   parseSpace(text: string): Space {
     const rooms = text.match(/(\d( \d\/\d)?) Zimmer/)![1]
     const area = text.match(/([0-9,]*) m²/)![1]
-    const floor = Formatter.formatNumber(text.match(/(\d*).{0,2}OG/)![1])
+    const floor = Formatter.formatNumber(text.match(/(\d*).{0,2}OG/)?.at(1) ?? "0")
 
     return {
       roomCount: Formatter.formatRoomCount(rooms),
